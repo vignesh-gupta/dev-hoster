@@ -8,10 +8,10 @@ importers:
 
   .:
     devDependencies:
-      '@workspace/eslint-config':
+      '@dev-hoster/eslint-config':
         specifier: workspace:*
         version: link:packages/eslint-config
-      '@workspace/typescript-config':
+      '@dev-hoster/typescript-config':
         specifier: workspace:*
         version: link:packages/typescript-config
       prettier:
@@ -29,7 +29,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@workspace/ui':
+      '@dev-hoster/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       lucide-react:
@@ -60,10 +60,10 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.2.3(@types/react@19.2.15)
-      '@workspace/eslint-config':
+      '@dev-hoster/eslint-config':
         specifier: workspace:^
         version: link:../../packages/eslint-config
-      '@workspace/typescript-config':
+      '@dev-hoster/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
       eslint:
@@ -165,10 +165,10 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.2.3(@types/react@19.2.15)
-      '@workspace/eslint-config':
+      '@dev-hoster/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@workspace/typescript-config':
+      '@dev-hoster/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       eslint:
