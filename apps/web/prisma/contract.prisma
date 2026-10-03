@@ -1,0 +1,72 @@
+// use prisma-8
+
+enum Framework {
+  REACT
+}
+
+enum DeploymentStatus {
+  QUEUED
+  BUILDING
+  READY
+  FAILED
+}
+
+// Placeholder for future auth. Every row defaults to user 0 (the "system" user)
+// seeded in prisma/seed.ts. Swap in real auth later without touching Project/Deployment.
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String?  @unique
+  name      String?
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+
+  projects Project[]
+}
+
+model Project {
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  repoUrl   String
+  framework Framework @default(REACT)
+
+  userId Int  @default(0)
+  user   User @relation(fields: [userId], references: [id])
+
+  deployments Deployment[] @relation("ProjectDeployments")
+
+  // Points at whichever deployment is currently live. Nullable until the first
+  // successful build. Only flipped on a READY status, never on QUEUED/BUILDING/FAILED.
+  activeDeploymentId String?     @unique
+  activeDeployment   Deployment? @relation("ActiveDeployment", fields: [activeDeploymentId], references: [id])
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+  @@index([userId])
+}
+
+model Deployment {
+  id String @id @default(uuid())
+
+  project   Project @relation("ProjectDeployments", fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  // Short, url-safe id derived from the commit sha (see lib/slug.ts). Unique per
+  // project, not globally -- two different projects can both have slug "a1b2c3".
+  slug String
+
+  commitSha String?
+  branch    String?
+
+  status DeploymentStatus @default(QUEUED)
+  s3Path String?
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  activeFor Project? @relation("ActiveDeployment")
+
+  @@unique([projectId, slug])
+  @@index([projectId, createdAt])
+}
