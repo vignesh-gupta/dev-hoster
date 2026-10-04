@@ -15,7 +15,7 @@ aws ecs register-task-definition \
       {"name": "AWS_BUCKET_NAME", "value": "'"${AWS_BUCKET_NAME:-simple-vercel-output}"'"},
       {"name": "GIT_PAT_TOKEN", "value": "'"$GIT_PAT_TOKEN"'"},
       {"name": "REDIS_URL", "value": "'"$REDIS_URL"'"},
-      {"name": "WEB_BASE_URL", "value": "'"$WEB_BASE_URL:-http://localhost:3000"'"},
-      {"name": "BUILDER_CALLBACK_TOKEN", "value": "'"$BUILDER_CALLBACK_TOKEN:-test"'"},
+      {"name": "WEB_BASE_URL", "value": "'"${WEB_BASE_URL:-http://host.docker.internal:3000}"'"},
+      {"name": "BUILDER_CALLBACK_TOKEN", "value": "'"${BUILDER_CALLBACK_TOKEN:-test}"'"}
     ]
   }]'

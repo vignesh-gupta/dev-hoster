@@ -1,7 +1,7 @@
 const { publishLog, publishStatus } = require("./config")
 
 const DEPLOYMENT_ID = process.env.DEPLOYMENT_ID
-const WEB_BASE_URL = process.env.WEB_BASE_URL
+const WEB_BASE_URL = process.env.WEB_BASE_URL || "http://host.docker.internal:3000"
 const CALLBACK_TOKEN = process.env.BUILDER_CALLBACK_TOKEN
 
 async function updateDeploymentStatus(status, extra = {}) {
@@ -14,7 +14,7 @@ async function updateDeploymentStatus(status, extra = {}) {
     return
   }
 
-  const url = new URL(`/api/deployments/${DEPLOYMENT_ID}/status`, WEB_BASE_URL)
+  const url = `${WEB_BASE_URL}/api/deployments/${DEPLOYMENT_ID}/status`;
 
   console.log(`Sending deployment status callback to ${url} with status: ${status}`)
   
