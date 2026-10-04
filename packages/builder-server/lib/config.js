@@ -1,12 +1,44 @@
 const { S3Client } = require("@aws-sdk/client-s3")
-// const Redis = require("ioredis");
+const Redis = require("ioredis")
 
-// const PROJECT_ID = process.env.PROJECT_ID
+const PROJECT_ID = process.env.PROJECT_ID
+const DEPLOYMENT_ID = process.env.DEPLOYMENT_ID
+const LOG_CHANNEL = `logs:${DEPLOYMENT_ID || PROJECT_ID || "unknown"}`
 
-// const publisher = new Redis(process.env.REDIS_URL);
+let publisher
+if (process.env.REDIS_URL) {
+  publisher = new Redis(process.env.REDIS_URL)
+}
+
+function publishEvent(event) {
+  if (!publisher) return
+
+  publisher
+    .publish(
+      LOG_CHANNEL,
+      JSON.stringify({
+        deploymentId: DEPLOYMENT_ID,
+        projectId: PROJECT_ID,
+        timestamp: new Date().toISOString(),
+        ...event,
+      })
+    )
+    .catch((err) => console.error("Failed to publish log event", err))
+}
+
 function publishLog(log) {
-  console.log(log)
-  // publisher.publish(`logs:${PROJECT_ID}`, JSON.stringify({ log }));
+  const message = String(log).trimEnd()
+  console.log(message)
+  publishEvent({ type: "log", message })
+}
+
+function publishStatus(status) {
+  publishEvent({ type: "status", status })
+}
+
+async function closePublisher() {
+  if (!publisher) return
+  await publisher.quit()
 }
 
 const s3Client = new S3Client({
@@ -24,4 +56,4 @@ async function sendS3Command(command) {
   }
 }
 
-module.exports = { sendS3Command, publishLog }
+module.exports = { sendS3Command, publishLog, publishStatus, closePublisher }

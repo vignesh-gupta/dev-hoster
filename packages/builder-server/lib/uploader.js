@@ -27,6 +27,7 @@ async function uploadDist(distFolderPath, projectId, bucket = BUCKET_NAME) {
   }
 
   publishLog("Done...")
+  return `s3://${bucket}/__outputs/${projectId}`
 }
 
 module.exports = { uploadDist }

@@ -9,7 +9,8 @@ aws ecs run-task \
           "name": "builder-server",
           "environment": [
             {"name": "GIT_REPOSITORY__URL", "value": "https://github.com/vignesh-gupta/dhurva-portfolio-2"},
-            {"name": "PROJECT_ID", "value": "p1"}
+            {"name": "PROJECT_ID", "value": "p1"},
+            {"name": "DEPLOYMENT_ID", "value": "d1"}
           ]
         }
       ]
