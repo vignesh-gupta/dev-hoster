@@ -6,10 +6,7 @@ export async function GET(): Promise<NextResponse> {
   const projects = await db.orm.public.Project.orderBy((p) =>
     p.createdAt.desc()
   ).all()
-  // const projects = await db.orm.project.findMany({
-  //   orderBy: { createdAt: "desc" },
-  //   include: { activeDeployment: true },
-  // });
+
   return NextResponse.json(projects)
 }
 

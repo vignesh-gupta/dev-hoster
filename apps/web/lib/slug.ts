@@ -12,10 +12,15 @@ export async function generateUniqueProjectSlug(name: string): Promise<string> {
   const base = slugifyProjectName(name)
   let candidate = base
   let attempt = 0
+  const MAX_ATTEMPTS = 5
 
-  while (await db.orm.public.Project.where({ slug: candidate }).first()) {
+  while (await db.orm.public.Project.where({ slug: candidate }).first() && attempt < MAX_ATTEMPTS) {
     attempt += 1
     candidate = `${base}-${attempt}`
+  }
+
+  if (attempt >= MAX_ATTEMPTS) {
+    throw new Error("Unable to generate a unique slug for the project name.")
   }
 
   return candidate

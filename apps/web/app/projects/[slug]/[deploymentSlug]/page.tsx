@@ -22,9 +22,6 @@ export default async function DeploymentPage({
   const isLive =
     deployment.status === "QUEUED" || deployment.status === "BUILDING"
 
-  // NOTE: preview currently resolves subdomain -> project's *active* deployment only.
-  // This link is only guaranteed to work while this deployment is the active one --
-  // see the note below the code for what changes to get permanent per-deployment URLs.
   const deploymentUrl = `https://${project.slug}.yourdomain.com`
 
   return (

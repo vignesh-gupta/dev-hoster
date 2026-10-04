@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from '@dev-hoster/ui/components/scroll-area'
 
 export function BuildLogViewer({
   deploymentId,
