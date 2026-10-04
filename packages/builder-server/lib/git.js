@@ -11,10 +11,10 @@ function buildAuthenticatedUrl(repoUrl, token) {
 
 function cloneRepo(repoUrl, token, outDirPath) {
   return new Promise((resolve, reject) => {
-    const authUrl = buildAuthenticatedUrl(repoUrl, token)
-
+    
     publishLog(`Cloning repository: ${repoUrl}`)
-
+    const authUrl = buildAuthenticatedUrl(repoUrl, token)
+    
     const p = exec(`git clone "${authUrl}" "${outDirPath}"`)
 
     p.stdout.on("data", (data) => publishLog(data.toString()))

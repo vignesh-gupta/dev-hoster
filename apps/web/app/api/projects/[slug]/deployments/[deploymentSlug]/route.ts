@@ -3,17 +3,18 @@ import { db } from "@/prisma/db"
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { slug: string; deploymentSlug: string } }
+  ctx: RouteContext<"/api/projects/[slug]/deployments/[deploymentSlug]">
 ): Promise<NextResponse> {
+  const { slug, deploymentSlug } = await ctx.params
   const project = await db.orm.public.Project.where({
-    slug: params.slug,
+    slug,
   }).first()
   if (!project)
     return NextResponse.json({ error: "project not found" }, { status: 404 })
 
   const deployment = await db.orm.public.Deployment.where({
     projectId: project.id,
-    slug: params.deploymentSlug,
+    slug: deploymentSlug,
   }).first()
   if (!deployment)
     return NextResponse.json({ error: "deployment not found" }, { status: 404 })

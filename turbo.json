@@ -1,6 +1,20 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["DATABASE_URL", "REDIS_URL"],
+  "globalEnv": [
+    "AWS_ENDPOINT_URL",
+    "AWS_REGION",
+    "BUILDER_CALLBACK_TOKEN",
+    "DATABASE_URL",
+    "ECS_CLUSTER",
+    "ECS_CONTAINER_NAME",
+    "ECS_LAUNCH_TYPE",
+    "ECS_SECURITY_GROUPS",
+    "ECS_TASK_DEFINITION",
+    "ECS_VPC_SUBNETS",
+    "REDIS_URL",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY"
+  ],
   "ui": "tui",
   "tasks": {
     "build": {

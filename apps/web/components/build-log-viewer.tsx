@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ScrollArea } from '@dev-hoster/ui/components/scroll-area'
 
 export function BuildLogViewer({
@@ -11,6 +12,7 @@ export function BuildLogViewer({
   isLive: boolean;
 }) {
   const [lines, setLines] = useState<string[]>([]);
+  const router = useRouter();
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,12 +22,24 @@ export function BuildLogViewer({
     source.onmessage = (event) => {
       setLines((prev) => [...prev, event.data]);
     };
+    source.addEventListener("log", (event) => {
+      const { message } = JSON.parse((event as MessageEvent).data);
+      setLines((prev) => [...prev, message]);
+    });
+    source.addEventListener("status", (event) => {
+      const { status } = JSON.parse((event as MessageEvent).data);
+
+      if (status === "READY" || status === "FAILED") {
+        source.close();
+        router.refresh();
+      }
+    });
     source.onerror = () => {
       source.close();
     };
 
     return () => source.close();
-  }, [deploymentId, isLive]);
+  }, [deploymentId, isLive, router]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

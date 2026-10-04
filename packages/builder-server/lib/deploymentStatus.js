@@ -15,13 +15,19 @@ async function updateDeploymentStatus(status, extra = {}) {
   }
 
   const url = new URL(`/api/deployments/${DEPLOYMENT_ID}/status`, WEB_BASE_URL)
+
+  console.log(`Sending deployment status callback to ${url} with status: ${status}`)
+  
   const response = await fetch(url, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       "x-builder-token": CALLBACK_TOKEN,
+      "Allow-Control-Allow-Origin": "*",
     },
     body: JSON.stringify({ status, ...extra }),
+  }).catch((err) => {
+    console.error(`Error sending deployment status callback: ${err.message || err}`)
   })
 
   if (!response.ok) {

@@ -1,32 +1,46 @@
-import { NextRequest } from "next/server";
-import Redis from "ioredis";
+import { NextRequest } from "next/server"
+import Redis from "ioredis"
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { deploymentId: string } }
+  ctx: RouteContext<"/api/deployments/[deploymentId]/logs">
 ) {
-  const subscriber = new Redis(process.env.REDIS_URL!);
-  const channel = `logs:${params.deploymentId}`;
+  const { deploymentId } = await ctx.params
+  const subscriber = new Redis(process.env.REDIS_URL!)
+  const channel = `logs:${deploymentId}`
 
   const stream = new ReadableStream({
     start(controller) {
-      const encoder = new TextEncoder();
-      const send = (line: string) => {
-        controller.enqueue(encoder.encode(`data: ${line}\n\n`));
-      };
+      const encoder = new TextEncoder()
+      let closed = false
 
-      subscriber.subscribe(channel);
-      subscriber.on("message", (_channel, message) => send(message));
+      const send = (line: string) => {
+        if (closed) return
+
+        try {
+          const event = JSON.parse(line)
+          const type = typeof event.type === "string" ? event.type : "message"
+          controller.enqueue(
+            encoder.encode(`event: ${type}\ndata: ${JSON.stringify(event)}\n\n`)
+          )
+        } catch {
+          controller.enqueue(encoder.encode(`data: ${line}\n\n`))
+        }
+      }
+
+      subscriber.subscribe(channel)
+      subscriber.on("message", (_channel, message) => send(message))
 
       req.signal.addEventListener("abort", () => {
-        subscriber.unsubscribe(channel);
-        subscriber.quit();
-        controller.close();
-      });
+        closed = true
+        subscriber.unsubscribe(channel)
+        subscriber.quit()
+        controller.close()
+      })
     },
-  });
+  })
 
   return new Response(stream, {
     headers: {
@@ -34,5 +48,5 @@ export async function GET(
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
     },
-  });
+  })
 }

@@ -6,6 +6,7 @@ const DEPLOYMENT_ID = process.env.DEPLOYMENT_ID
 const LOG_CHANNEL = `logs:${DEPLOYMENT_ID || PROJECT_ID || "unknown"}`
 
 let publisher
+const pendingPublishes = new Set()
 if (process.env.REDIS_URL) {
   publisher = new Redis(process.env.REDIS_URL)
 }
@@ -13,7 +14,7 @@ if (process.env.REDIS_URL) {
 function publishEvent(event) {
   if (!publisher) return
 
-  publisher
+  const publish = publisher
     .publish(
       LOG_CHANNEL,
       JSON.stringify({
@@ -24,6 +25,8 @@ function publishEvent(event) {
       })
     )
     .catch((err) => console.error("Failed to publish log event", err))
+    .finally(() => pendingPublishes.delete(publish))
+  pendingPublishes.add(publish)
 }
 
 function publishLog(log) {
@@ -38,6 +41,7 @@ function publishStatus(status) {
 
 async function closePublisher() {
   if (!publisher) return
+  await Promise.allSettled(pendingPublishes)
   await publisher.quit()
 }
 

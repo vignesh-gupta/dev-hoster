@@ -6,15 +6,16 @@ import { notFound } from "next/navigation"
 export default async function DeploymentPage({
   params,
 }: {
-  params: { slug: string; deploymentSlug: string }
+  params: Promise<{ slug: string; deploymentSlug: string }>
 }) {
+  const { slug, deploymentSlug } = await params
   const project = await db.orm.public.Project.where({
-    slug: params.slug,
+    slug: slug,
   }).first()
   if (!project) notFound()
   const deployment = await db.orm.public.Deployment.where({
     projectId: project.id,
-    slug: params.deploymentSlug,
+    slug: deploymentSlug,
   }).first()
 
   if (!deployment) notFound()

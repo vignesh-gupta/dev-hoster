@@ -6,9 +6,11 @@ import { notFound } from "next/navigation"
 export default async function ProjectPage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
-  const project = await db.orm.public.Project.where({ slug: params.slug })
+  const { slug } = await params
+
+  const project = await db.orm.public.Project.where({ slug })
     .include("deployments", (d) => d.orderBy((x) => x.createdAt.desc()))
     .include("activeDeployment")
     .first()
