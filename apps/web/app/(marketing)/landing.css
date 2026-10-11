@@ -1,0 +1,435 @@
+/*
+ * Landing page styles. Scoped under .landing so nothing leaks into the app.
+ * Lane: hi-vis orange drench + freight-signage industrial. Palette is fixed
+ * (independent of the app's light/dark theme).
+ */
+.landing {
+  --l-orange: oklch(0.69 0.21 46);
+  --l-orange-hi: oklch(0.76 0.19 55);
+  --l-orange-deep: oklch(0.56 0.2 41);
+  --l-ink: oklch(0.16 0.012 50);
+  --l-ink-2: oklch(0.21 0.012 50);
+  --l-steel: oklch(0.33 0.014 50);
+  --l-concrete: oklch(0.975 0.003 70);
+  --l-green: oklch(0.8 0.19 150);
+  --l-red: oklch(0.72 0.18 27);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  font-family: var(--font-archivo), var(--app-font-sans);
+  color: var(--l-ink);
+  background: var(--l-orange);
+  overflow-x: clip;
+}
+.landing * {
+  border-color: currentColor;
+}
+html:has(.landing) {
+  scroll-behavior: smooth;
+}
+
+.landing .font-mono-l {
+  font-family: var(--font-jb), var(--app-font-mono);
+}
+
+/* ---------- display type ---------- */
+.landing .display {
+  font-stretch: 125%;
+  font-weight: 900;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.landing .display-xl {
+  font-size: clamp(2.6rem, 8.6vw, 6rem);
+}
+.landing .display-lg {
+  font-size: clamp(2.1rem, 5.4vw, 4rem);
+}
+.landing .body-l {
+  font-stretch: 100%;
+  font-weight: 500;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* ---------- pill nav ---------- */
+.landing .pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: min(100%, 64rem);
+  padding: 0.4rem 0.4rem 0.4rem 0.9rem;
+  border-radius: 999px;
+  color: var(--l-concrete);
+  background: color-mix(in oklch, var(--l-ink) 88%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklch, white 10%, transparent);
+  backdrop-filter: blur(14px) saturate(1.4);
+  transition:
+    width 560ms var(--ease-expo),
+    padding 560ms var(--ease-expo),
+    background-color 300ms var(--ease-out);
+  will-change: width;
+}
+.landing .pill[data-compact="true"] {
+  width: min(100%, 27rem);
+  padding-left: 0.7rem;
+  background: color-mix(in oklch, var(--l-ink) 94%, transparent);
+}
+.landing .pill-fold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  max-width: 30rem;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 1;
+  transition:
+    max-width 560ms var(--ease-expo),
+    opacity 240ms var(--ease-out);
+}
+.landing .pill[data-compact="true"] .pill-fold {
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.landing .pill-link {
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: color-mix(in oklch, var(--l-concrete) 78%, transparent);
+  transition: color 150ms, background-color 150ms;
+}
+@media (hover: hover) and (pointer: fine) {
+  .landing .pill-link:hover {
+    color: var(--l-concrete);
+    background: color-mix(in oklch, white 10%, transparent);
+  }
+}
+.landing .pill-link:focus-visible,
+.landing .btn-l:focus-visible {
+  outline: 2px solid var(--l-orange-hi);
+  outline-offset: 2px;
+}
+
+/* ---------- buttons ---------- */
+.landing .btn-l {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  padding: 0 1.25rem;
+  font-weight: 800;
+  font-stretch: 112%;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 160ms,
+    color 160ms;
+}
+.landing .btn-l:active {
+  transform: scale(0.97);
+}
+.landing .btn-ink {
+  color: var(--l-concrete);
+  background: var(--l-ink);
+}
+.landing .btn-orange {
+  color: var(--l-ink);
+  background: var(--l-orange);
+}
+.landing .btn-outline {
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+.landing .pill .btn-l {
+  height: 2.2rem;
+  padding: 0 1rem;
+  font-size: 0.78rem;
+  border-radius: 999px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .landing .btn-ink:hover {
+    background: var(--l-steel);
+  }
+  .landing .btn-orange:hover {
+    background: var(--l-orange-hi);
+  }
+  .landing .btn-outline:hover {
+    color: var(--l-orange);
+    background: var(--l-ink);
+  }
+}
+
+/* ---------- isometric build-pipeline scene ---------- */
+/*
+ * Slabs are real 3D boxes (top + front + right faces). The world is tilted into
+ * an isometric view; --mx/--my (pointer), --ex (explode) and --p (story
+ * progress) are written by JS and consumed here, so React never re-renders.
+ */
+.landing .iso {
+  --s: 1;
+  --ex: 0;
+  --mx: 0;
+  --my: 0;
+  --slab: 270px;
+  --thick: 20px;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 0.95;
+  perspective: 1800px;
+  perspective-origin: 50% 30%;
+  user-select: none;
+}
+.landing .iso-world {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transform: scale(var(--s)) rotateX(calc(56deg + var(--my) * -7deg))
+    rotateZ(calc(-40deg + var(--mx) * 12deg));
+}
+.landing .iso-float {
+  transform-style: preserve-3d;
+  animation: iso-float 6s ease-in-out infinite;
+}
+@keyframes iso-float {
+  0%,
+  100% {
+    transform: translateZ(0);
+  }
+  50% {
+    transform: translateZ(14px);
+  }
+}
+.landing .slab {
+  --gap: calc(78px + var(--ex) * 100px);
+  position: absolute;
+  left: calc(var(--slab) / -2);
+  top: calc(var(--slab) / -2);
+  width: var(--slab);
+  height: var(--slab);
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--i) * var(--gap) - 120px));
+  transition: transform 700ms var(--ease-expo);
+}
+.landing .slab > i {
+  position: absolute;
+  display: block;
+}
+.landing .slab .top {
+  inset: 0;
+  transform: translateZ(var(--thick));
+  background: var(--face, var(--l-ink));
+  box-shadow: inset 0 0 0 2px var(--edge, color-mix(in oklch, white 14%, transparent));
+  transition: background-color 400ms var(--ease-out);
+}
+.landing .slab .front {
+  left: 0;
+  top: 0;
+  width: var(--slab);
+  height: var(--thick);
+  transform-origin: top left;
+  transform: translateY(var(--slab)) rotateX(90deg);
+  background: color-mix(in oklch, var(--face, var(--l-ink)) 78%, black);
+}
+.landing .slab .right {
+  left: 0;
+  top: 0;
+  width: var(--slab);
+  height: var(--thick);
+  transform-origin: top left;
+  transform: translateX(var(--slab)) rotateZ(90deg) rotateX(90deg);
+  background: color-mix(in oklch, var(--face, var(--l-ink)) 62%, black);
+}
+.landing .slab .shadow {
+  inset: 0;
+  transform: translateZ(-1px);
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklch, black 22%, transparent),
+    transparent
+  );
+  filter: blur(14px);
+  opacity: 0.6;
+}
+.landing .slab-label {
+  position: absolute;
+  left: 18px;
+  bottom: 14px;
+  right: 18px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--ink-on, var(--l-concrete));
+}
+.landing .slab-title {
+  font-stretch: 125%;
+  font-weight: 900;
+  font-size: 44px;
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.landing .slab-meta {
+  font-size: 11px;
+  line-height: 1.35;
+  text-align: right;
+  opacity: 0.75;
+}
+
+/* a packet (the "build") that rides up through the stack */
+.landing .packet {
+  position: absolute;
+  left: -17px;
+  top: -17px;
+  width: 34px;
+  height: 34px;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--pz, 0) * 1px));
+}
+.landing .packet > i {
+  position: absolute;
+  display: block;
+  width: 34px;
+  height: 34px;
+  background: var(--l-orange);
+  box-shadow: inset 0 0 0 2px var(--l-ink);
+}
+.landing .packet .t {
+  transform: translateZ(34px);
+  background: var(--l-orange-hi);
+}
+.landing .packet .f {
+  transform-origin: top left;
+  transform: translateY(34px) rotateX(90deg);
+  background: var(--l-orange-deep);
+}
+.landing .packet .r {
+  transform-origin: top left;
+  transform: translateX(34px) rotateZ(90deg) rotateX(90deg);
+  background: color-mix(in oklch, var(--l-orange-deep) 75%, black);
+}
+.landing .packet-auto {
+  animation: packet-climb 5.5s var(--ease-expo) infinite;
+}
+@keyframes packet-climb {
+  0% {
+    transform: translateZ(-60px);
+  }
+  70%,
+  100% {
+    transform: translateZ(185px);
+  }
+}
+
+/* active slab in the pinned story */
+.landing .iso[data-mode="story"][data-stage="0"] .slab[data-i="0"],
+.landing .iso[data-mode="story"][data-stage="1"] .slab[data-i="1"],
+.landing .iso[data-mode="story"][data-stage="2"] .slab[data-i="2"],
+.landing .iso[data-mode="story"][data-stage="3"] .slab[data-i="3"] {
+  --face: var(--l-orange);
+  --ink-on: var(--l-ink);
+  --edge: var(--l-ink);
+}
+
+/* ---------- 3D terminal ---------- */
+.landing .term-stage {
+  perspective: 1500px;
+}
+.landing .term {
+  --tx: 0;
+  --ty: 0;
+  transform-style: preserve-3d;
+  transform: rotateY(calc(-9deg + var(--tx) * 9deg))
+    rotateX(calc(4deg + var(--ty) * -7deg));
+  transition: transform 260ms var(--ease-out);
+}
+.landing .term-win {
+  transform-style: preserve-3d;
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, white 12%, transparent),
+    28px 36px 0 -2px var(--l-orange-deep);
+}
+.landing .term-float {
+  position: absolute;
+  transform-style: preserve-3d;
+}
+.landing .cursor-blink {
+  animation: blink 1s steps(2, start) infinite;
+}
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* ---------- feature tiles ---------- */
+.landing .tilt {
+  --tx: 0;
+  --ty: 0;
+  transform: perspective(900px) rotateY(calc(var(--tx) * 6deg))
+    rotateX(calc(var(--ty) * -6deg));
+  transition: transform 220ms var(--ease-out);
+  transform-style: preserve-3d;
+}
+
+/* rollback stack: past builds fan out on hover/focus */
+.landing .rollback {
+  --step: 14px;
+}
+.landing .rollback:is(:hover, :focus-within) {
+  --step: 40px;
+}
+.landing .stack-card {
+  transform: translateY(calc(var(--k) * var(--step)));
+  transition: transform 520ms var(--ease-expo);
+}
+
+/* ---------- reveal-on-view (enhances an already-visible default) ---------- */
+.landing [data-reveal] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 600ms var(--ease-out),
+    transform 700ms var(--ease-expo);
+}
+.landing [data-reveal-ready="true"]:not([data-in="true"]) {
+  opacity: 0;
+  transform: translateY(24px) rotateX(-12deg);
+  transform-origin: 50% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing .iso-float,
+  .landing .packet-auto,
+  .landing .cursor-blink {
+    animation: none;
+  }
+  .landing .pill,
+  .landing .pill-fold,
+  .landing .slab,
+  .landing .term,
+  .landing .tilt {
+    transition: none;
+  }
+}
+
+/* slab colourways per scene */
+.landing .iso[data-mode="hero"] .slab[data-i="3"] {
+  --face: var(--l-concrete);
+  --ink-on: var(--l-ink);
+  --edge: var(--l-ink);
+}
+.landing .iso[data-mode="story"] .slab {
+  --face: var(--l-steel);
+}
