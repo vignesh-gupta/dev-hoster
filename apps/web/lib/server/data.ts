@@ -1,11 +1,9 @@
-// TODO-remove-last: single seam between the API routes and the data layer.
-// Every route imports from here. Today it re-exports the JSON-backed mock in
-// ./mock; swap these exports for real DB / service calls (Prisma, ECS RunTask,
-// Redis logs, ...) and the routes keep working unchanged.
-export * from "./mock/projects"
-export * from "./mock/deployments"
-export * from "./mock/env-vars"
-export * from "./mock/domains"
-export * from "./mock/logs"
-export * from "./mock/users"
-export { ensureRunner } from "./mock/builder"
+// The single seam between the API routes and the data layer. Routes import from
+// here only, so a different backing store means changing these exports.
+export * from "./db/projects"
+export * from "./db/deployments"
+export * from "./db/env-vars"
+export * from "./db/domains"
+export * from "./db/users"
+export * from "./logs"
+export * from "./config"

@@ -1,7 +1,7 @@
 // Shared entity shapes returned by the API routes. Dates are ISO strings.
 // Mirrors apps/web/prisma/contract.prisma, plus a few UI-facing extras.
 
-export const FRAMEWORKS = ["REACT", "VUE", "SVELTE", "STATIC"] as const
+export const FRAMEWORKS = ["REACT", "VUE", "SVELTE", "STATIC", "NEXT"] as const
 export type Framework = (typeof FRAMEWORKS)[number]
 
 export const DEPLOYMENT_STATUSES = [

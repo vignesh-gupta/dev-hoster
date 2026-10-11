@@ -2,6 +2,15 @@
 
 enum Framework {
   REACT
+  VUE
+  SVELTE
+  STATIC
+  NEXT
+}
+
+enum DomainStatus {
+  PENDING
+  VERIFIED
 }
 
 enum DeploymentStatus {
@@ -30,10 +39,19 @@ model Project {
   repoUrl   String
   framework Framework @default(REACT)
 
+  // Build settings. `outputDir` is the folder the builder uploads ("dist", or "out"
+  // for a statically exported Next.js app).
+  branch         String @default("main")
+  installCommand String @default("npm install")
+  buildCommand   String @default("npm run build")
+  outputDir      String @default("dist")
+
   userId Int  @default(0)
   user   User @relation(fields: [userId], references: [id])
 
   deployments Deployment[] @relation("ProjectDeployments")
+  envVars     EnvVar[]
+  domains     Domain[]
 
   // Points at whichever deployment is currently live. Nullable until the first
   // successful build. Only flipped on a READY status, never on QUEUED/BUILDING/FAILED.
@@ -55,8 +73,12 @@ model Deployment {
   // project, not globally -- two different projects can both have slug "a1b2c3".
   slug String
 
-  commitSha String?
-  branch    String?
+  commitSha     String?
+  commitMessage String?
+  branch        String?
+
+  // ARN of the ECS task running the build; used to stop it on cancel.
+  taskArn String?
 
   status DeploymentStatus @default(QUEUED)
   s3Path String?
@@ -69,4 +91,37 @@ model Deployment {
 
   @@unique([projectId, slug])
   @@index([projectId, createdAt])
+}
+
+// Build-time environment variables, passed to the builder as BUILD_ENV_JSON.
+// Secret values are write-only over the API.
+model EnvVar {
+  id String @id @default(uuid())
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  key    String
+  value  String
+  secret Boolean @default(false)
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+
+  @@unique([projectId, key])
+}
+
+// Custom domains. Every project also gets <slug>.<PREVIEW_DOMAIN> implicitly.
+model Domain {
+  id String @id @default(uuid())
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  hostname String       @unique
+  status   DomainStatus @default(PENDING)
+
+  createdAt TimestamptzString @default(now())
+
+  @@index([projectId])
 }

@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'79b43188b9f4b65fe227662acc2da8b8a72a56178da1110b10dc517fb40ef7e5'>;
+  StorageHashBase<'0d81b5da227f94c98f48127d29ed31b4fee8f49c223c57eaf2c2769a1eb91c8c'>;
 export type ExecutionHash =
-  ExecutionHashBase<'5bd166a84ed91d12d42fc96c42a95976828e9f1a5eb4f3f3a89866ac75ed5ff0'>;
+  ExecutionHashBase<'c0ae2a8c12cb0479eb3cfc05b2cfaaee4385a96ef70465e55adf11bb4cfadb03'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -252,6 +252,7 @@ export type FieldOutputTypes = {
   readonly public: {
     readonly Deployment: {
       readonly branch: CodecTypes['pg/text@1']['output'] | null;
+      readonly commitMessage: CodecTypes['pg/text@1']['output'] | null;
       readonly commitSha: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly finishedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -261,14 +262,35 @@ export type FieldOutputTypes = {
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly startedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly status: 'QUEUED' | 'BUILDING' | 'READY' | 'FAILED';
+      readonly taskArn: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    };
+    readonly Domain: {
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly hostname: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly projectId: CodecTypes['pg/text@1']['output'];
+      readonly status: 'PENDING' | 'VERIFIED';
+    };
+    readonly EnvVar: {
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly key: CodecTypes['pg/text@1']['output'];
+      readonly projectId: CodecTypes['pg/text@1']['output'];
+      readonly secret: CodecTypes['pg/bool@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly value: CodecTypes['pg/text@1']['output'];
     };
     readonly Project: {
       readonly activeDeploymentId: CodecTypes['pg/text@1']['output'] | null;
+      readonly branch: CodecTypes['pg/text@1']['output'];
+      readonly buildCommand: CodecTypes['pg/text@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly framework: 'REACT';
+      readonly framework: 'REACT' | 'VUE' | 'SVELTE' | 'STATIC' | 'NEXT';
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly installCommand: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly outputDir: CodecTypes['pg/text@1']['output'];
       readonly repoUrl: CodecTypes['pg/text@1']['output'];
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -287,6 +309,7 @@ export type FieldInputTypes = {
   readonly public: {
     readonly Deployment: {
       readonly branch: CodecTypes['pg/text@1']['input'] | null;
+      readonly commitMessage: CodecTypes['pg/text@1']['input'] | null;
       readonly commitSha: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly finishedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
@@ -296,14 +319,35 @@ export type FieldInputTypes = {
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly startedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly status: 'QUEUED' | 'BUILDING' | 'READY' | 'FAILED';
+      readonly taskArn: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
+    };
+    readonly Domain: {
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly hostname: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly projectId: CodecTypes['pg/text@1']['input'];
+      readonly status: 'PENDING' | 'VERIFIED';
+    };
+    readonly EnvVar: {
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly key: CodecTypes['pg/text@1']['input'];
+      readonly projectId: CodecTypes['pg/text@1']['input'];
+      readonly secret: CodecTypes['pg/bool@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly value: CodecTypes['pg/text@1']['input'];
     };
     readonly Project: {
       readonly activeDeploymentId: CodecTypes['pg/text@1']['input'] | null;
+      readonly branch: CodecTypes['pg/text@1']['input'];
+      readonly buildCommand: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly framework: 'REACT';
+      readonly framework: 'REACT' | 'VUE' | 'SVELTE' | 'STATIC' | 'NEXT';
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly installCommand: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly outputDir: CodecTypes['pg/text@1']['input'];
       readonly repoUrl: CodecTypes['pg/text@1']['input'];
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -322,6 +366,7 @@ export type StorageColumnTypes = {
   readonly public: {
     readonly Deployment: {
       readonly branch: CodecTypes['pg/text@1']['output'] | null;
+      readonly commitMessage: CodecTypes['pg/text@1']['output'] | null;
       readonly commitSha: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly finishedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -331,14 +376,35 @@ export type StorageColumnTypes = {
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly startedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly status: 'QUEUED' | 'BUILDING' | 'READY' | 'FAILED';
+      readonly taskArn: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    };
+    readonly Domain: {
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly hostname: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly projectId: CodecTypes['pg/text@1']['output'];
+      readonly status: 'PENDING' | 'VERIFIED';
+    };
+    readonly EnvVar: {
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly key: CodecTypes['pg/text@1']['output'];
+      readonly projectId: CodecTypes['pg/text@1']['output'];
+      readonly secret: CodecTypes['pg/bool@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly value: CodecTypes['pg/text@1']['output'];
     };
     readonly Project: {
       readonly activeDeploymentId: CodecTypes['pg/text@1']['output'] | null;
+      readonly branch: CodecTypes['pg/text@1']['output'];
+      readonly buildCommand: CodecTypes['pg/text@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly framework: 'REACT';
+      readonly framework: 'REACT' | 'VUE' | 'SVELTE' | 'STATIC' | 'NEXT';
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly installCommand: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly outputDir: CodecTypes['pg/text@1']['output'];
       readonly repoUrl: CodecTypes['pg/text@1']['output'];
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -357,6 +423,7 @@ export type StorageColumnInputTypes = {
   readonly public: {
     readonly Deployment: {
       readonly branch: CodecTypes['pg/text@1']['input'] | null;
+      readonly commitMessage: CodecTypes['pg/text@1']['input'] | null;
       readonly commitSha: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly finishedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
@@ -366,14 +433,35 @@ export type StorageColumnInputTypes = {
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly startedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly status: 'QUEUED' | 'BUILDING' | 'READY' | 'FAILED';
+      readonly taskArn: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
+    };
+    readonly Domain: {
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly hostname: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly projectId: CodecTypes['pg/text@1']['input'];
+      readonly status: 'PENDING' | 'VERIFIED';
+    };
+    readonly EnvVar: {
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly key: CodecTypes['pg/text@1']['input'];
+      readonly projectId: CodecTypes['pg/text@1']['input'];
+      readonly secret: CodecTypes['pg/bool@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly value: CodecTypes['pg/text@1']['input'];
     };
     readonly Project: {
       readonly activeDeploymentId: CodecTypes['pg/text@1']['input'] | null;
+      readonly branch: CodecTypes['pg/text@1']['input'];
+      readonly buildCommand: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly framework: 'REACT';
+      readonly framework: 'REACT' | 'VUE' | 'SVELTE' | 'STATIC' | 'NEXT';
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly installCommand: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly outputDir: CodecTypes['pg/text@1']['input'];
       readonly repoUrl: CodecTypes['pg/text@1']['input'];
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -392,6 +480,7 @@ export type StorageColumnInputTypes = {
 export namespace Models {
   export type public_Deployment = {
     branch: CodecTypes['pg/text@1']['output'] | null;
+    commitMessage: CodecTypes['pg/text@1']['output'] | null;
     commitSha: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
     finishedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -401,25 +490,52 @@ export namespace Models {
     slug: CodecTypes['pg/text@1']['output'];
     startedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     status: 'QUEUED' | 'BUILDING' | 'READY' | 'FAILED';
+    taskArn: CodecTypes['pg/text@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     activeFor: public_Project | null;
     project: public_Project;
     readonly [RelationKeys]?: 'activeFor' | 'project';
   };
+  export type public_Domain = {
+    createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    hostname: CodecTypes['pg/text@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    projectId: CodecTypes['pg/text@1']['output'];
+    status: 'PENDING' | 'VERIFIED';
+    project: public_Project;
+    readonly [RelationKeys]?: 'project';
+  };
+  export type public_EnvVar = {
+    createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    key: CodecTypes['pg/text@1']['output'];
+    projectId: CodecTypes['pg/text@1']['output'];
+    secret: CodecTypes['pg/bool@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    value: CodecTypes['pg/text@1']['output'];
+    project: public_Project;
+    readonly [RelationKeys]?: 'project';
+  };
   export type public_Project = {
     activeDeploymentId: CodecTypes['pg/text@1']['output'] | null;
+    branch: CodecTypes['pg/text@1']['output'];
+    buildCommand: CodecTypes['pg/text@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    framework: 'REACT';
+    framework: 'REACT' | 'VUE' | 'SVELTE' | 'STATIC' | 'NEXT';
     id: CodecTypes['pg/text@1']['output'];
+    installCommand: CodecTypes['pg/text@1']['output'];
     name: CodecTypes['pg/text@1']['output'];
+    outputDir: CodecTypes['pg/text@1']['output'];
     repoUrl: CodecTypes['pg/text@1']['output'];
     slug: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     userId: CodecTypes['pg/int4@1']['output'];
     activeDeployment: public_Deployment | null;
     deployments: public_Deployment[];
+    domains: public_Domain[];
+    envVars: public_EnvVar[];
     user: public_User;
-    readonly [RelationKeys]?: 'activeDeployment' | 'deployments' | 'user';
+    readonly [RelationKeys]?: 'activeDeployment' | 'deployments' | 'domains' | 'envVars' | 'user';
   };
   export type public_User = {
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -435,6 +551,8 @@ export namespace Models {
 export declare const models: {
   public: {
     Deployment: Models.public_Deployment;
+    Domain: Models.public_Domain;
+    EnvVar: Models.public_EnvVar;
     Project: Models.public_Project;
     User: Models.public_User;
   };
@@ -461,6 +579,11 @@ type ContractBase = Omit<
             readonly Deployment: {
               columns: {
                 readonly branch: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly commitMessage: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -515,6 +638,11 @@ type ContractBase = Omit<
                     readonly value: DefaultLiteralValue<'pg/text@1', 'QUEUED'>;
                   };
                 };
+                readonly taskArn: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly updatedAt: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-string@1';
@@ -552,12 +680,156 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly Domain: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly hostname: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly projectId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'PENDING'>;
+                  };
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['hostname'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'Domain_projectId_idx_a96e4d92';
+                  readonly prefix: 'Domain_projectId_idx';
+                  readonly columns: readonly ['projectId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Domain';
+                    readonly columns: readonly ['projectId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Project';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly EnvVar: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly key: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly projectId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly secret: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
+                };
+                readonly value: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['projectId', 'key'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'EnvVar_projectId_idx_a96e4d92';
+                  readonly prefix: 'EnvVar_projectId_idx';
+                  readonly columns: readonly ['projectId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'EnvVar';
+                    readonly columns: readonly ['projectId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Project';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly Project: {
               columns: {
                 readonly activeDeploymentId: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
+                };
+                readonly branch: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'main'>;
+                  };
+                };
+                readonly buildCommand: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'npm run build'>;
+                  };
                 };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
@@ -579,10 +851,28 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly installCommand: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'npm install'>;
+                  };
+                };
                 readonly name: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly outputDir: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'dist'>;
+                  };
                 };
                 readonly repoUrl: {
                   readonly nativeType: 'text';
@@ -693,7 +983,14 @@ type ContractBase = Omit<
               readonly kind: 'valueSet';
               readonly values: readonly ['QUEUED', 'BUILDING', 'READY', 'FAILED'];
             };
-            readonly Framework: { readonly kind: 'valueSet'; readonly values: readonly ['REACT'] };
+            readonly DomainStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['PENDING', 'VERIFIED'];
+            };
+            readonly Framework: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['REACT', 'VUE', 'SVELTE', 'STATIC', 'NEXT'];
+            };
           };
         };
       };
@@ -709,6 +1006,8 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'Deployment';
     };
+    readonly Domain: { readonly namespace: 'public' & NamespaceId; readonly model: 'Domain' };
+    readonly EnvVar: { readonly namespace: 'public' & NamespaceId; readonly model: 'EnvVar' };
     readonly Project: { readonly namespace: 'public' & NamespaceId; readonly model: 'Project' };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
   };
@@ -719,6 +1018,10 @@ type ContractBase = Omit<
           readonly Deployment: {
             readonly fields: {
               readonly branch: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly commitMessage: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
@@ -767,6 +1070,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly taskArn: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly updatedAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -806,6 +1113,7 @@ type ContractBase = Omit<
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly branch: { readonly column: 'branch' };
+                readonly commitMessage: { readonly column: 'commitMessage' };
                 readonly commitSha: { readonly column: 'commitSha' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly finishedAt: { readonly column: 'finishedAt' };
@@ -815,7 +1123,125 @@ type ContractBase = Omit<
                 readonly slug: { readonly column: 'slug' };
                 readonly startedAt: { readonly column: 'startedAt' };
                 readonly status: { readonly column: 'status' };
+                readonly taskArn: { readonly column: 'taskArn' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly Domain: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly hostname: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly projectId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly project: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Project';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['projectId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Domain';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly hostname: { readonly column: 'hostname' };
+                readonly id: { readonly column: 'id' };
+                readonly projectId: { readonly column: 'projectId' };
+                readonly status: { readonly column: 'status' };
+              };
+            };
+          };
+          readonly EnvVar: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly key: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly projectId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly secret: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly value: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly project: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Project';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['projectId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'EnvVar';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly key: { readonly column: 'key' };
+                readonly projectId: { readonly column: 'projectId' };
+                readonly secret: { readonly column: 'secret' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly value: { readonly column: 'value' };
               };
             };
           };
@@ -823,6 +1249,14 @@ type ContractBase = Omit<
             readonly fields: {
               readonly activeDeploymentId: {
                 readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly branch: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly buildCommand: {
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly createdAt: {
@@ -840,7 +1274,15 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly installCommand: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly outputDir: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
@@ -888,6 +1330,28 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['projectId'];
                 };
               };
+              readonly domains: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Domain';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['projectId'];
+                };
+              };
+              readonly envVars: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'EnvVar';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['projectId'];
+                };
+              };
               readonly user: {
                 readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
                 readonly cardinality: 'N:1';
@@ -903,10 +1367,14 @@ type ContractBase = Omit<
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly activeDeploymentId: { readonly column: 'activeDeploymentId' };
+                readonly branch: { readonly column: 'branch' };
+                readonly buildCommand: { readonly column: 'buildCommand' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly framework: { readonly column: 'framework' };
                 readonly id: { readonly column: 'id' };
+                readonly installCommand: { readonly column: 'installCommand' };
                 readonly name: { readonly column: 'name' };
+                readonly outputDir: { readonly column: 'outputDir' };
                 readonly repoUrl: { readonly column: 'repoUrl' };
                 readonly slug: { readonly column: 'slug' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
@@ -979,9 +1447,22 @@ type ContractBase = Omit<
               { readonly name: 'FAILED'; readonly value: 'FAILED' },
             ];
           };
+          readonly DomainStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'PENDING'; readonly value: 'PENDING' },
+              { readonly name: 'VERIFIED'; readonly value: 'VERIFIED' },
+            ];
+          };
           readonly Framework: {
             readonly codecId: 'pg/text@1';
-            readonly members: readonly [{ readonly name: 'REACT'; readonly value: 'REACT' }];
+            readonly members: readonly [
+              { readonly name: 'REACT'; readonly value: 'REACT' },
+              { readonly name: 'VUE'; readonly value: 'VUE' },
+              { readonly name: 'SVELTE'; readonly value: 'SVELTE' },
+              { readonly name: 'STATIC'; readonly value: 'STATIC' },
+              { readonly name: 'NEXT'; readonly value: 'NEXT' },
+            ];
           };
         };
       };
@@ -1027,6 +1508,31 @@ type ContractBase = Omit<
             readonly column: 'updatedAt';
             readonly namespace: 'public';
             readonly table: 'Deployment';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly column: 'id';
+            readonly namespace: 'public';
+            readonly table: 'Domain';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly column: 'id';
+            readonly namespace: 'public';
+            readonly table: 'EnvVar';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'timestampNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'timestampNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly column: 'updatedAt';
+            readonly namespace: 'public';
+            readonly table: 'EnvVar';
           };
         },
         {

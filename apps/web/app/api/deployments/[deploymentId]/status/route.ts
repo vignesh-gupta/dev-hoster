@@ -20,9 +20,9 @@ export async function PATCH(
     }
 
     const { deploymentId } = await ctx.params
-    const { status, s3Path } = await parseBody(req, builderStatusSchema)
+    const { status, ...extra } = await parseBody(req, builderStatusSchema)
     // Only READY flips Project.activeDeploymentId (handled in the data layer).
-    const deployment = await updateDeploymentStatus(deploymentId, status, s3Path)
+    const deployment = await updateDeploymentStatus(deploymentId, status, extra)
     if (!deployment) throw notFound("Deployment")
     return ok({ ok: true })
   })

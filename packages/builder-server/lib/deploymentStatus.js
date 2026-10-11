@@ -23,11 +23,8 @@ async function updateDeploymentStatus(status, extra = {}) {
     headers: {
       "Content-Type": "application/json",
       "x-builder-token": CALLBACK_TOKEN,
-      "Allow-Control-Allow-Origin": "*",
     },
     body: JSON.stringify({ status, ...extra }),
-  }).catch((err) => {
-    console.error(`Error sending deployment status callback: ${err.message || err}`)
   })
 
   if (!response.ok) {

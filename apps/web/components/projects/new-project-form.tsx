@@ -16,7 +16,7 @@ import { ChevronRight, Plus, X } from "lucide-react"
 import { toast } from "sonner"
 import { useCreateProject } from "@/lib/api/hooks"
 import { validate, type FieldErrors } from "@/lib/form"
-import { createProjectSchema } from "@/lib/schemas"
+import { createProjectSchema, defaultOutputDir } from "@/lib/schemas"
 import { projectNameFromRepoUrl } from "@/lib/slug"
 import { FRAMEWORKS, type Framework } from "@/lib/types"
 import { Field } from "@/components/field"
@@ -32,7 +32,7 @@ interface EnvRow {
 const STEPS = [
   ["Clone", "We pull your repo at the branch you choose."],
   ["Build", "Install and build run in an isolated container."],
-  ["Upload", "The dist/ folder is stored and versioned."],
+  ["Publish", "The build output is stored and versioned."],
   ["Go live", "Your project gets a URL as soon as the build succeeds."],
 ]
 
@@ -45,6 +45,7 @@ export function NewProjectForm() {
   const [framework, setFramework] = useState<Framework>("REACT")
   const [installCommand, setInstallCommand] = useState("npm install")
   const [buildCommand, setBuildCommand] = useState("npm run build")
+  const [outputDir, setOutputDir] = useState("")
   const [env, setEnv] = useState<EnvRow[]>([])
   const [showBuild, setShowBuild] = useState(false)
   const [showEnv, setShowEnv] = useState(false)
@@ -63,13 +64,14 @@ export function NewProjectForm() {
       framework,
       installCommand,
       buildCommand,
+      outputDir: outputDir.trim() || undefined,
       envVars: env.filter((r) => r.key.trim() || r.value),
     })
     if (result.errors) {
       setErrors(result.errors)
       // Reveal collapsed sections that hold an error, then focus the first invalid field.
       if (Object.keys(result.errors).some((k) => k.startsWith("envVars"))) setShowEnv(true)
-      if (/installCommand|buildCommand/.test(Object.keys(result.errors).join())) setShowBuild(true)
+      if (/installCommand|buildCommand|outputDir/.test(Object.keys(result.errors).join())) setShowBuild(true)
       requestAnimationFrame(() =>
         document.querySelector<HTMLElement>("[aria-invalid=true]")?.focus()
       )
@@ -103,7 +105,7 @@ export function NewProjectForm() {
               label="GitHub repository URL"
               required
               error={errors.repoUrl}
-              hint="Public repos only for now. The build output must be in dist/."
+              hint="Public repos only for now."
             >
               {(p) => (
                 <Input
@@ -191,9 +193,22 @@ export function NewProjectForm() {
                 />
               )}
             </Field>
-            <p className="text-[11px] text-muted-foreground sm:col-span-2">
-              Output directory is <code className="font-mono">dist/</code>.
-            </p>
+            <Field
+              label="Output directory"
+              error={errors.outputDir}
+              hint="Folder the build writes to. Leave empty for the framework default."
+              className="sm:col-span-2"
+            >
+              {(p) => (
+                <Input
+                  {...p}
+                  value={outputDir}
+                  placeholder={defaultOutputDir(framework)}
+                  onChange={(e) => setOutputDir(e.target.value)}
+                  className="font-mono"
+                />
+              )}
+            </Field>
           </div>
         </Disclosure>
 

@@ -24,6 +24,7 @@ export const FRAMEWORK_LABEL = {
   VUE: "Vue",
   SVELTE: "Svelte",
   STATIC: "Static",
+  NEXT: "Next.js",
 } as const
 
 export function ProjectShell({

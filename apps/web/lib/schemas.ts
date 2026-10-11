@@ -26,6 +26,18 @@ const branchSchema = z
 
 const commandSchema = z.string().trim().max(200)
 
+const outputDirSchema = z
+  .string()
+  .trim()
+  .min(1, "Output directory is required")
+  .max(100)
+  .regex(/^[\w./-]+$/, "Invalid directory")
+  .refine((v) => !v.startsWith("/") && !v.includes(".."), "Must be a relative path")
+
+/** Where each framework writes its static build by default. */
+export const defaultOutputDir = (framework: (typeof FRAMEWORKS)[number]) =>
+  framework === "NEXT" ? "out" : "dist"
+
 export const envKeySchema = z
   .string()
   .trim()
@@ -46,6 +58,7 @@ export const createProjectSchema = z.object({
   framework: z.enum(FRAMEWORKS).default("REACT"),
   installCommand: commandSchema.default("npm install"),
   buildCommand: commandSchema.default("npm run build"),
+  outputDir: outputDirSchema.optional(),
   envVars: z.array(envVarInputSchema).max(50).default([]),
 })
 export type CreateProjectInput = z.input<typeof createProjectSchema>
@@ -58,6 +71,7 @@ export const updateProjectSchema = z
     framework: z.enum(FRAMEWORKS),
     installCommand: commandSchema,
     buildCommand: commandSchema,
+    outputDir: outputDirSchema,
   })
   .partial()
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>
@@ -92,6 +106,9 @@ export const createDomainSchema = z.object({
 export const builderStatusSchema = z.object({
   status: z.enum(DEPLOYMENT_STATUSES.filter((s) => s !== "QUEUED") as ["BUILDING", "READY", "FAILED"]),
   s3Path: z.string().optional(),
+  // Reported once the repo is cloned.
+  commitSha: z.string().max(64).optional(),
+  commitMessage: z.string().max(500).optional(),
 })
 
 export const deploymentsQuerySchema = z.object({

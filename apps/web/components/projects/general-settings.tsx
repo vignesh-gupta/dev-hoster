@@ -33,7 +33,7 @@ import { Section } from "@/components/section"
 
 type Draft = Pick<
   ProjectWithActive,
-  "name" | "repoUrl" | "branch" | "framework" | "installCommand" | "buildCommand"
+  "name" | "repoUrl" | "branch" | "framework" | "installCommand" | "buildCommand" | "outputDir"
 >
 
 const pick = (p: ProjectWithActive): Draft => ({
@@ -43,6 +43,7 @@ const pick = (p: ProjectWithActive): Draft => ({
   framework: p.framework,
   installCommand: p.installCommand,
   buildCommand: p.buildCommand,
+  outputDir: p.outputDir,
 })
 
 export function GeneralSettings({ slug }: { slug: string }) {
@@ -175,10 +176,16 @@ export function GeneralSettings({ slug }: { slug: string }) {
             </div>
             <Field
               label="Output directory"
-              hint="Fixed: the builder uploads dist/ only."
+              error={errors.outputDir}
+              hint="Folder the build writes to, relative to the repo root."
             >
               {(p) => (
-                <Input {...p} value={`${project.outputDir}/`} disabled readOnly className="font-mono" />
+                <Input
+                  {...p}
+                  value={draft.outputDir}
+                  onChange={(e) => set("outputDir", e.target.value)}
+                  className="font-mono"
+                />
               )}
             </Field>
           </div>

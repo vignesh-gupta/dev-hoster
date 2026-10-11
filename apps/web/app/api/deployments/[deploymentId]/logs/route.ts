@@ -1,9 +1,10 @@
 import type { NextRequest } from "next/server"
 import {
-  ensureRunner,
+  channelFor,
+  createSubscriber,
   getDeploymentById,
-  getLogs,
-  subscribeLogs,
+  getHistory,
+  toLogEvent,
 } from "@/lib/server/data"
 import { handle, notFound } from "@/lib/server/http"
 import { isTerminalStatus, type LogEvent } from "@/lib/types"
@@ -11,8 +12,9 @@ import { isTerminalStatus, type LogEvent } from "@/lib/types"
 export const dynamic = "force-dynamic"
 
 /**
- * SSE stream of build logs. Replays the stored lines first, then streams live
- * `log` / `status` events and closes once the deployment is READY or FAILED.
+ * SSE stream of build logs. Replays the builder's stored events first, then
+ * streams live `log` / `status` events from Redis and closes once the
+ * deployment is READY or FAILED.
  */
 export async function GET(
   req: NextRequest,
@@ -22,33 +24,29 @@ export async function GET(
     const { deploymentId } = await ctx.params
     const deployment = await getDeploymentById(deploymentId)
     if (!deployment) throw notFound("Deployment")
-    if (!isTerminalStatus(deployment.status)) ensureRunner(deploymentId)
 
     const encoder = new TextEncoder()
-    let cleanup = () => {}
+    const subscriber = createSubscriber()
+    let closed = false
+    let keepAlive: ReturnType<typeof setInterval> | undefined
 
     const stream = new ReadableStream({
       async start(controller) {
-        let closed = false
         const seen = new Set<string>()
-        const lineKey = (e: { ts: string; message: string }) =>
-          `${e.ts}|${e.message}`
+        const held: string[] = []
+        let replaying = true
 
         const close = () => {
           if (closed) return
           closed = true
-          cleanup()
+          clearInterval(keepAlive)
+          subscriber.quit().catch(() => subscriber.disconnect())
           try {
             controller.close()
           } catch {}
         }
-        const send = (event: LogEvent) => {
+        const emit = (event: LogEvent) => {
           if (closed) return
-          if (event.type === "log") {
-            const key = lineKey(event)
-            if (seen.has(key)) return
-            seen.add(key)
-          }
           controller.enqueue(
             encoder.encode(
               `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`
@@ -56,34 +54,45 @@ export async function GET(
           )
           if (event.type === "status" && isTerminalStatus(event.status)) close()
         }
+        // Each payload is identical in history and on the channel, so the raw
+        // string is a reliable de-dupe key for the replay/live overlap.
+        const emitRaw = (raw: string) => {
+          if (seen.has(raw)) return
+          seen.add(raw)
+          const event = toLogEvent(raw)
+          if (event) emit(event)
+        }
 
-        // Subscribe before replaying so no line is missed. Live events that arrive
-        // mid-replay are held back and flushed afterwards so order is preserved;
-        // `seen` de-dupes any overlap with the stored lines.
-        let replaying = true
-        const held: LogEvent[] = []
-        const unsubscribe = subscribeLogs(deploymentId, (event) =>
-          replaying ? held.push(event) : send(event)
-        )
-        const keepAlive = setInterval(() => {
+        req.signal.addEventListener("abort", close)
+        keepAlive = setInterval(() => {
           if (!closed) controller.enqueue(encoder.encode(": ping\n\n"))
         }, 15_000)
-        cleanup = () => {
-          unsubscribe()
-          clearInterval(keepAlive)
-        }
-        req.signal.addEventListener("abort", close)
 
-        for (const line of await getLogs(deploymentId)) {
-          send({ type: "log", ...line })
+        try {
+          // Subscribe before replaying so nothing is missed; live events that
+          // arrive mid-replay are held back to keep order.
+          subscriber.on("message", (_channel, raw: string) =>
+            replaying ? held.push(raw) : emitRaw(raw)
+          )
+          await subscriber.subscribe(channelFor(deploymentId))
+          for (const raw of await getHistory(deploymentId)) emitRaw(raw)
+          replaying = false
+          held.forEach(emitRaw)
+        } catch (err) {
+          console.error("[logs] redis unavailable", err)
         }
-        replaying = false
-        held.forEach(send)
+
+        // The database is the source of truth for the final state.
         const current = await getDeploymentById(deploymentId)
-        if (current) send({ type: "status", status: current.status })
+        if (current) emit({ type: "status", status: current.status })
+        if (current && isTerminalStatus(current.status)) close()
+        // Redis down and still building: end the stream; the client retries.
+        else if (subscriber.status !== "ready") close()
       },
       cancel() {
-        cleanup()
+        closed = true
+        clearInterval(keepAlive)
+        subscriber.quit().catch(() => subscriber.disconnect())
       },
     })
 
