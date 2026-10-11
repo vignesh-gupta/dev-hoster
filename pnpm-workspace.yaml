@@ -7,3 +7,9 @@ allowBuilds:
   msw: false
   sharp: true
   unrs-resolver: true
+
+# Keep the Prisma CLI toolchain on the same version as @prisma/orm-postgres,
+# otherwise `prisma contract emit` fails with PSL_DEFAULT_TYPE_INCOMPATIBLE.
+overrides:
+  "@prisma/orm-toolchain": 8.0.0-rc.12
+  "@prisma/cli-engine": 0.6.1

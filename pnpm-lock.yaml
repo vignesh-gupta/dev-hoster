@@ -4,6 +4,10 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@prisma/orm-toolchain': 8.0.0-rc.12
+  '@prisma/cli-engine': 0.6.1
+
 importers:
 
   .:
@@ -61,7 +65,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/ui
       '@prisma/cli-engine':
-        specifier: ^0.6.1
+        specifier: 0.6.1
         version: 0.6.1(@prisma/management-api-sdk@1.79.0)(magicast@0.5.5)
       '@prisma/orm-postgres':
         specifier: 8.0.0-rc.12
