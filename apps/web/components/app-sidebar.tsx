@@ -12,10 +12,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSkeleton,
   SidebarRail,
   SidebarSeparator,
 } from "@dev-hoster/ui/components/sidebar"
+import { Skeleton } from "@dev-hoster/ui/components/skeleton"
 import {
   Avatar,
   AvatarFallback,
@@ -84,7 +84,10 @@ export function AppSidebar() {
             {projects.isPending &&
               Array.from({ length: 3 }, (_, i) => (
                 <SidebarMenuItem key={i}>
-                  <SidebarMenuSkeleton showIcon />
+                  <div className="flex h-8 items-center gap-2 px-2">
+                    <Skeleton className="size-4" />
+                    <Skeleton className="h-3.5 flex-1" style={{ maxWidth: `${[62, 78, 50][i]}%` }} />
+                  </div>
                 </SidebarMenuItem>
               ))}
             {projects.data?.slice(0, 6).map((p) => (

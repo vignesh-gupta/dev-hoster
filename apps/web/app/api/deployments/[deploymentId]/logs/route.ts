@@ -57,8 +57,14 @@ export async function GET(
           if (event.type === "status" && isTerminalStatus(event.status)) close()
         }
 
-        // Subscribe before replaying so no line is missed; `seen` de-dupes overlap.
-        const unsubscribe = subscribeLogs(deploymentId, send)
+        // Subscribe before replaying so no line is missed. Live events that arrive
+        // mid-replay are held back and flushed afterwards so order is preserved;
+        // `seen` de-dupes any overlap with the stored lines.
+        let replaying = true
+        const held: LogEvent[] = []
+        const unsubscribe = subscribeLogs(deploymentId, (event) =>
+          replaying ? held.push(event) : send(event)
+        )
         const keepAlive = setInterval(() => {
           if (!closed) controller.enqueue(encoder.encode(": ping\n\n"))
         }, 15_000)
@@ -71,6 +77,8 @@ export async function GET(
         for (const line of await getLogs(deploymentId)) {
           send({ type: "log", ...line })
         }
+        replaying = false
+        held.forEach(send)
         const current = await getDeploymentById(deploymentId)
         if (current) send({ type: "status", status: current.status })
       },
