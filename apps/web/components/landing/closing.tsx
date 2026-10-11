@@ -10,13 +10,13 @@ export function LogsSection() {
       <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
         <Reveal>
           <h2 className="display display-lg">
-            Every line,
+            Watch every
             <br />
-            as it happens.
+            build, live.
           </h2>
           <p className="body-l mt-5 max-w-sm text-lg">
-            Build logs stream to your browser while the build runs, and stay on
-            the deployment afterwards. Follow, wrap, copy.
+            Progress streams to your browser while your site builds, and stays
+            on the deployment afterwards, so you always know what happened.
           </p>
         </Reveal>
         <Terminal3D />
@@ -36,29 +36,67 @@ export function Closing() {
             next one.
           </h2>
           <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Link href="/dashboard" className="btn-l btn-ink">
-              Open the dashboard <ArrowRight aria-hidden className="size-4" />
+            <Link href="/projects/new" className="btn-l btn-ink">
+              Connect a repo <ArrowRight aria-hidden className="size-4" />
             </Link>
-            <Link href="/projects/new" className="btn-l btn-outline">
-              Deploy a repo
+            <Link href="/dashboard" className="btn-l btn-outline">
+              Open the dashboard
             </Link>
           </div>
         </Reveal>
       </section>
 
-      <footer className="bg-[var(--l-ink)] px-5 py-8 text-[var(--l-concrete)] sm:px-8">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <LogoMark className="size-6" />
-            <span className="font-extrabold uppercase" style={{ fontStretch: "112%" }}>
-              Dev Hoster
-            </span>
+      <footer className="overflow-hidden bg-[var(--l-ink)] text-[var(--l-concrete)]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 pt-16 pb-10 sm:px-8 md:grid-cols-[1.2fr_1fr_1fr]">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2.5">
+              <LogoMark className="size-7" />
+              <span
+                className="text-base font-black tracking-tight uppercase"
+                style={{ fontStretch: "118%" }}
+              >
+                Dev Hoster
+              </span>
+            </div>
+            <p className="body-l max-w-xs text-sm text-white/65">
+              Push to Git and it is live. Hosting for Next.js and static
+              sites, without the setup.
+            </p>
           </div>
-          <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2 text-white/70">
-            <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
-            <Link href="/projects" className="hover:text-white">Projects</Link>
-            <Link href="/login" className="hover:text-white">Sign in</Link>
+
+          <nav aria-label="Footer" className="space-y-3 text-sm">
+            <p className="font-mono-l text-xs text-white/45">Product</p>
+            <ul className="space-y-2 font-semibold">
+              <li><Link href="/dashboard" className="hover:text-[var(--l-orange)]">Dashboard</Link></li>
+              <li><Link href="/projects" className="hover:text-[var(--l-orange)]">Projects</Link></li>
+              <li><Link href="/login" className="hover:text-[var(--l-orange)]">Sign in</Link></li>
+            </ul>
           </nav>
+
+          <div className="space-y-3 text-sm">
+            <p className="font-mono-l text-xs text-white/45">Made by</p>
+            <p
+              className="text-2xl leading-none font-black uppercase"
+              style={{ fontStretch: "118%" }}
+            >
+              <span className="mt-1 block text-(--l-orange)">Vignesh Gupta</span>
+            </p>
+          </div>
+        </div>
+
+        {/* the wordmark: sized to the viewport so it always spans edge to edge */}
+        <div aria-hidden className="select-none">
+          <p
+            className="display -mb-[0.09em] text-center whitespace-nowrap text-[var(--l-orange)]"
+            style={{ fontSize: "min(11.3vw, 14rem)", lineHeight: 0.8, textWrap: "nowrap" }}
+          >
+            Dev Hoster
+          </p>
+        </div>
+        <div className="border-t border-white/15">
+          <p className="mx-auto max-w-7xl px-5 py-4 text-xs text-white/50 sm:px-8">
+            © {new Date().getFullYear()} Dev Hoster. Built by Vignesh Gupta.
+          </p>
         </div>
       </footer>
     </>

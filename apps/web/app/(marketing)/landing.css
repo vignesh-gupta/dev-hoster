@@ -55,65 +55,54 @@ html:has(.landing) {
   text-wrap: pretty;
 }
 
-/* ---------- pill nav ---------- */
-.landing .pill {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  width: min(100%, 64rem);
-  padding: 0.4rem 0.4rem 0.4rem 0.9rem;
-  border-radius: 999px;
-  color: var(--l-concrete);
-  background: color-mix(in oklch, var(--l-ink) 88%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in oklch, white 10%, transparent);
-  backdrop-filter: blur(14px) saturate(1.4);
-  transition:
-    width 560ms var(--ease-expo),
-    padding 560ms var(--ease-expo),
-    background-color 300ms var(--ease-out);
-  will-change: width;
+/* ---------- nav bar (flat, part of the page) ---------- */
+.landing .navbar {
+  background: var(--l-orange);
+  color: var(--l-ink);
+  border-bottom: 2px solid var(--l-ink);
 }
-.landing .pill[data-compact="true"] {
-  width: min(100%, 27rem);
-  padding-left: 0.7rem;
-  background: color-mix(in oklch, var(--l-ink) 94%, transparent);
+.landing .navbar nav {
+  height: 4.5rem;
+  transition: height 320ms var(--ease-expo);
 }
-.landing .pill-fold {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  max-width: 30rem;
-  overflow: hidden;
-  white-space: nowrap;
-  opacity: 1;
-  transition:
-    max-width 560ms var(--ease-expo),
-    opacity 240ms var(--ease-out);
+.landing .navbar[data-compact="true"] nav {
+  height: 3.25rem;
 }
-.landing .pill[data-compact="true"] .pill-fold {
-  max-width: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-.landing .pill-link {
-  padding: 0.45rem 0.8rem;
-  border-radius: 999px;
+.landing .nav-link {
+  position: relative;
   font-size: 0.8125rem;
-  font-weight: 600;
-  color: color-mix(in oklch, var(--l-concrete) 78%, transparent);
-  transition: color 150ms, background-color 150ms;
+  font-weight: 800;
+  font-stretch: 108%;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.landing .nav-link::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -4px;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
-  .landing .pill-link:hover {
-    color: var(--l-concrete);
-    background: color-mix(in oklch, white 10%, transparent);
+  .landing .nav-link:hover::after {
+    transform: scaleX(1);
   }
 }
-.landing .pill-link:focus-visible,
+.landing .nav-link:focus-visible::after {
+  transform: scaleX(1);
+}
+.landing .navbar .nav-cta {
+  height: 2.5rem;
+  padding: 0 1rem;
+  font-size: 0.8rem;
+}
+.landing .nav-link:focus-visible,
 .landing .btn-l:focus-visible {
-  outline: 2px solid var(--l-orange-hi);
-  outline-offset: 2px;
+  outline: 2px solid var(--l-ink);
+  outline-offset: 3px;
 }
 
 /* ---------- buttons ---------- */
@@ -148,12 +137,7 @@ html:has(.landing) {
 .landing .btn-outline {
   box-shadow: inset 0 0 0 2px currentColor;
 }
-.landing .pill .btn-l {
-  height: 2.2rem;
-  padding: 0 1rem;
-  font-size: 0.78rem;
-  border-radius: 999px;
-}
+
 @media (hover: hover) and (pointer: fine) {
   .landing .btn-ink:hover {
     background: var(--l-steel);
@@ -179,7 +163,7 @@ html:has(.landing) {
   --mx: 0;
   --my: 0;
   --slab: 270px;
-  --thick: 20px;
+  --thick: 28px;
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 0.95;
@@ -211,19 +195,26 @@ html:has(.landing) {
   }
 }
 .landing .slab {
-  --gap: calc(78px + var(--ex) * 100px);
+  --gap: calc(100px + var(--ex) * 90px);
   position: absolute;
   left: calc(var(--slab) / -2);
   top: calc(var(--slab) / -2);
   width: var(--slab);
   height: var(--slab);
   transform-style: preserve-3d;
-  transform: translateZ(calc(var(--i) * var(--gap) - 120px));
+  transform: translateZ(
+      calc(var(--i) * var(--gap) - 150px + (1 - var(--in, 1)) * 380px)
+    )
+    translateX(calc((1 - var(--in, 1)) * 260px));
   transition: transform 700ms var(--ease-expo);
 }
 .landing .slab > i {
   position: absolute;
   display: block;
+  opacity: var(--in, 1);
+}
+.landing .iso[data-mode="story"] .slab {
+  transition: transform 220ms var(--ease-out);
 }
 .landing .slab .top {
   inset: 0;
@@ -280,6 +271,19 @@ html:has(.landing) {
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
+.landing .slab-side {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: var(--ink-on, var(--l-concrete));
+  opacity: 0.88;
+}
 .landing .slab-meta {
   font-size: 11px;
   line-height: 1.35;
@@ -287,49 +291,55 @@ html:has(.landing) {
   opacity: 0.75;
 }
 
-/* a packet (the "build") that rides up through the stack */
+/* the "app": a distinct cube that rides through the layers */
 .landing .packet {
+  --pk: 62px;
   position: absolute;
-  left: -17px;
-  top: -17px;
-  width: 34px;
-  height: 34px;
+  left: calc(var(--pk) / -2);
+  top: calc(var(--pk) / -2);
+  width: var(--pk);
+  height: var(--pk);
   transform-style: preserve-3d;
   transform: translateZ(calc(var(--pz, 0) * 1px));
 }
 .landing .packet > i {
   position: absolute;
   display: block;
-  width: 34px;
-  height: 34px;
-  background: var(--l-orange);
+  width: var(--pk);
+  height: var(--pk);
   box-shadow: inset 0 0 0 2px var(--l-ink);
 }
 .landing .packet .t {
-  transform: translateZ(34px);
-  background: var(--l-orange-hi);
+  display: grid;
+  place-items: center;
+  color: var(--l-ink);
+  transform: translateZ(var(--pk));
+  background: var(--pk-t, var(--l-orange-hi));
 }
 .landing .packet .f {
   transform-origin: top left;
-  transform: translateY(34px) rotateX(90deg);
-  background: var(--l-orange-deep);
+  transform: translateY(var(--pk)) rotateX(90deg);
+  background: var(--pk-f, var(--l-orange-deep));
 }
 .landing .packet .r {
   transform-origin: top left;
-  transform: translateX(34px) rotateZ(90deg) rotateX(90deg);
-  background: color-mix(in oklch, var(--l-orange-deep) 75%, black);
+  transform: translateX(var(--pk)) rotateZ(90deg) rotateX(90deg);
+  background: var(--pk-r, oklch(0.42 0.14 38));
 }
-.landing .packet-auto {
-  animation: packet-climb 5.5s var(--ease-expo) infinite;
+.landing .packet .shadow-p {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklch, black 45%, transparent),
+    transparent
+  );
+  filter: blur(6px);
+  transform: translateZ(-2px) scale(1.5);
+  box-shadow: none;
 }
-@keyframes packet-climb {
-  0% {
-    transform: translateZ(-60px);
-  }
-  70%,
-  100% {
-    transform: translateZ(185px);
-  }
+.landing .iso[data-mode="story"] {
+  --pk-t: var(--l-concrete);
+  --pk-f: oklch(0.84 0.004 70);
+  --pk-r: oklch(0.68 0.006 70);
 }
 
 /* active slab in the pinned story */
@@ -411,12 +421,10 @@ html:has(.landing) {
 
 @media (prefers-reduced-motion: reduce) {
   .landing .iso-float,
-  .landing .packet-auto,
   .landing .cursor-blink {
     animation: none;
   }
-  .landing .pill,
-  .landing .pill-fold,
+  .landing .navbar nav,
   .landing .slab,
   .landing .term,
   .landing .tilt {

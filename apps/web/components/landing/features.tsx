@@ -41,8 +41,8 @@ export function Features() {
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <h2 className="display display-lg max-w-3xl">
-            Everything a deploy needs.{" "}
-            <span className="text-[var(--l-orange-deep)]">Nothing it does not.</span>
+            Everything hosting needs.{" "}
+            <span className="text-[var(--l-orange-deep)]">Nothing to set up.</span>
           </h2>
         </Reveal>
 
@@ -143,28 +143,30 @@ export function Features() {
           </Reveal>
 
           <Reveal className="md:col-span-7" delay={80}>
-            <div id="api" className="h-full scroll-mt-24">
-              <Tile dark>
-                <pre className="font-mono-l overflow-x-auto text-[13px] leading-6">
-                  <span className="text-white/50"># trigger a deploy from a script</span>
-                  {"\n"}
-                  <span className="text-[var(--l-orange)]">curl</span> -X POST \{"\n"}
-                  {"  "}/api/projects/portfolio-site/deployments{"\n\n"}
-                  <span className="text-white/50">{"{"}</span> <span className="text-[var(--l-green)]">&quot;slug&quot;</span>:{" "}
-                  &quot;908696&quot;, <span className="text-[var(--l-green)]">&quot;status&quot;</span>: &quot;QUEUED&quot;{" "}
-                  <span className="text-white/50">{"}"}</span>
-                </pre>
-                <div>
-                  <h3 className={h3} style={{ fontStretch: "118%" }}>
-                    One REST API
-                  </h3>
-                  <p className="body-l mt-2 max-w-md text-sm text-white/70">
-                    The dashboard uses the same endpoints you can call from a
-                    script. A CLI can drive everything the UI can.
-                  </p>
-                </div>
-              </Tile>
-            </div>
+            <Tile dark>
+              <div className="font-mono-l space-y-1.5 text-xs">
+                {[
+                  ["d814c1", "chore: bump dependencies", "Live", "text-[var(--l-green)]"],
+                  ["913b3f", "wip: blog index", "Build failed", "text-[var(--l-red)]"],
+                  ["2abb0f", "fix: mobile nav overflow", "Ready", "text-white/60"],
+                ].map(([slug, msg, status, tone]) => (
+                  <div key={slug} className="flex items-center gap-3 border border-white/20 px-3 py-2">
+                    <span className="font-bold">{slug}</span>
+                    <span className="truncate text-white/60">{msg}</span>
+                    <span className={"ml-auto shrink-0 font-bold " + tone}>{status}</span>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <h3 className={h3} style={{ fontStretch: "118%" }}>
+                  Every push, deployed
+                </h3>
+                <p className="body-l mt-2 max-w-md text-sm text-white/70">
+                  Push to your branch and a new version goes up on its own. If a
+                  build fails, your live site keeps running untouched.
+                </p>
+              </div>
+            </Tile>
           </Reveal>
         </div>
       </div>

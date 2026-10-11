@@ -5,24 +5,20 @@ import { IsoScene } from "@/components/landing/iso-scene"
 
 const STEPS = [
   {
-    title: "Clone",
-    body: "Your repo is pulled at the branch you pick. Public GitHub repos work today.",
-    log: "$ git clone --branch main",
+    title: "Connect",
+    body: "Link your Git repository once and choose the branch you want online.",
   },
   {
     title: "Build",
-    body: "Install and build run in an isolated container. Logs stream to you as it goes.",
-    log: "$ npm install && npm run build",
+    body: "Every push starts a fresh build automatically. Watch it happen, line by line.",
   },
   {
-    title: "Upload",
-    body: "The dist/ folder is versioned and stored. Every build is kept, so nothing is overwritten.",
-    log: "$ upload dist/ → s3://builds/portfolio-site",
+    title: "Deploy",
+    body: "Builds that succeed are deployed for you. Every version is kept, so you can go back any time.",
   },
   {
-    title: "Go live",
-    body: "The URL flips to the new build the moment it succeeds. If it fails, the old one keeps serving.",
-    log: "✓ live at portfolio-site.localhost:8000",
+    title: "Live",
+    body: "Your site goes online at its own address. If a build fails, the current version keeps running.",
   },
 ]
 
@@ -79,9 +75,9 @@ export function PipelineStory() {
             <h2 className="display display-lg">
               From push
               <br />
-              to <span className="text-[var(--l-orange)]">live URL</span>
+              to <span className="text-[var(--l-orange)]">live site</span>
               <br />
-              in four moves.
+              in four steps.
             </h2>
 
             <div className="relative mt-8 pl-6">

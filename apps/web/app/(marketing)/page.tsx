@@ -2,19 +2,20 @@ import type { Metadata } from "next"
 import { Features } from "@/components/landing/features"
 import { Closing, LogsSection } from "@/components/landing/closing"
 import { Hero } from "@/components/landing/hero"
-import { PillNav } from "@/components/landing/pill-nav"
+import { LandingNav } from "@/components/landing/pill-nav"
 import { PipelineStory } from "@/components/landing/pipeline-story"
 
 export const metadata: Metadata = {
-  title: { absolute: "Dev Hoster — paste a repo, get a URL" },
+  authors: [{ name: "Vignesh Gupta" }],
+  title: { absolute: "Dev Hoster — push to Git, we host it" },
   description:
-    "Dev Hoster clones your Git repo, builds it in a container and serves it on its own subdomain.",
+    "Connect your Git repository and Dev Hoster builds, deploys and hosts it for you. Next.js and static sites, live on every push.",
 }
 
 export default function LandingPage() {
   return (
     <>
-      <PillNav />
+      <LandingNav />
       <main>
         <Hero />
         <PipelineStory />

@@ -5,18 +5,15 @@ import { CircleCheck } from "lucide-react"
 import { useInView, usePointerTilt, useReducedMotion } from "@/components/landing/hooks"
 
 const LINES: { t: string; tone?: "dim" | "ok" | "cmd" }[] = [
-  { t: "Cloning github.com/vignesh/portfolio-site#main", tone: "dim" },
-  { t: "Cloned repository (commit d814c18)", tone: "dim" },
-  { t: "Detected package manager: npm", tone: "dim" },
-  { t: "Injecting 2 environment variable(s)", tone: "dim" },
-  { t: "$ npm install", tone: "cmd" },
-  { t: "added 312 packages in 8s", tone: "dim" },
-  { t: "$ npm run build", tone: "cmd" },
-  { t: "✓ 134 modules transformed.", tone: "ok" },
-  { t: "dist/index.html          0.46 kB", tone: "dim" },
-  { t: "dist/assets/index.js   143.20 kB", tone: "dim" },
-  { t: "Uploaded 5 files", tone: "dim" },
-  { t: "Deployment ready", tone: "ok" },
+  { t: "New push to main detected", tone: "cmd" },
+  { t: "Fetching your repository", tone: "dim" },
+  { t: "Detected a Next.js project", tone: "dim" },
+  { t: "Installing dependencies", tone: "dim" },
+  { t: "Building your app", tone: "cmd" },
+  { t: "Compiled successfully", tone: "ok" },
+  { t: "Optimizing pages", tone: "dim" },
+  { t: "Deploying this version", tone: "cmd" },
+  { t: "Your site is live", tone: "ok" },
 ]
 
 /** A tilting 3D terminal that types out a build, with floating chips for depth. */
@@ -59,14 +56,14 @@ export function Terminal3D() {
               <span className="size-2.5 bg-[var(--l-green)]" />
             </div>
             <p className="font-mono-l text-xs text-white/60">
-              build · portfolio-site · d814c1
+              portfolio-site · deployment d814c1
             </p>
             <span className="w-10" />
           </div>
           <div
             role="log"
-            aria-label="Example build log"
-            className="font-mono-l min-h-[21rem] space-y-0.5 px-4 py-4 text-[13px] leading-6"
+            aria-label="Example build output"
+            className="font-mono-l min-h-[17rem] space-y-0.5 px-4 py-4 text-[13px] leading-6"
           >
             {LINES.slice(0, n).map((l, i) => (
               <div key={i} className="flex gap-3">
@@ -108,7 +105,7 @@ export function Terminal3D() {
           className="term-float font-mono-l -bottom-6 left-6 hidden bg-[var(--l-concrete)] px-3 py-2 text-xs font-bold text-[var(--l-ink)] sm:block"
           style={{ transform: "translateZ(110px)" }}
         >
-          portfolio-site.localhost:8000
+          portfolio-site.hosted.app
         </div>
       </div>
     </div>
