@@ -1,0 +1,11 @@
+# cp terraform.tfvars.example terraform.tfvars
+
+aws_region = "us-east-1"
+
+# Must be reachable from the builder tasks on AWS (deployed URL or tunnel).
+web_base_url = "https://your-tunnel.ngrok.app"
+
+# git_pat_token = "ghp_..."   # only needed for private repos
+
+# Use an external Redis if the web app runs outside the VPC:
+# redis_url = "rediss://default:...@your-host:6379"
