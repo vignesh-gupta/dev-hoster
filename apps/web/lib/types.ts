@@ -107,3 +107,9 @@ export interface ApiErrorBody {
     issues?: { path: string; message: string }[]
   }
 }
+
+export interface DomainsResponse {
+  /** The always-on `<slug>.<preview domain>` host. */
+  primary: string
+  domains: Domain[]
+}

@@ -1,3 +1,6 @@
+// TODO-remove-last: not used while the mock builder (lib/server/mock/builder.ts) is
+// active. This is the real ECS RunTask implementation to wire back into
+// lib/server/data.ts when the mock layer is replaced.
 import { ECSClient, LaunchType, RunTaskCommand } from "@aws-sdk/client-ecs"
 
 type QueueBuildInput = {
