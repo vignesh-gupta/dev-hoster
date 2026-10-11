@@ -283,6 +283,8 @@ html:has(.landing) {
   white-space: nowrap;
   color: var(--ink-on, var(--l-concrete));
   opacity: 0.88;
+  /* the front face is a rotated element seen from behind: undo the flip */
+  transform: scaleY(-1);
 }
 .landing .slab-meta {
   font-size: 11px;
