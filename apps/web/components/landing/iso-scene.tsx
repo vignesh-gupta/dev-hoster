@@ -160,7 +160,7 @@ export function IsoScene({
           ))}
           {/* the app: a cube with the product mark on its lid */}
           <div className="packet">
-            <i className="shadow-p" />
+            {/* <i className="shadow-p" /> */}
             <i className="f" />
             <i className="r" />
             <i className="t">

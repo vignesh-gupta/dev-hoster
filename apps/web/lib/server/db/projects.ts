@@ -133,3 +133,10 @@ export async function deleteProject(slug: string): Promise<boolean> {
   })
   return true
 }
+
+
+export async function getLiveDeploymentIdByProjectSlug(slug: string): Promise<string | null> {
+  const project = await getProjectRow(slug)
+  if (!project) return null
+  return project.id
+}
