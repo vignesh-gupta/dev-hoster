@@ -26,7 +26,7 @@ docker run -d --name pg-forward -p 7001:5432 alpine/socat tcp-listen:5432,fork,r
 ```
 
 6. Test a real login
-```
+```sh
 docker run --rm -it postgres:18.6-alpine psql "postgresql://root:<password>@host.docker.internal:7001/postgres?sslmode=disable" -c "\l"
 ```
 
