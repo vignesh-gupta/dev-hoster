@@ -39,3 +39,15 @@ To Test if the RDS service is running on localhost, you can use the following Po
 ```powershell
 Test-NetConnection localhost -Port 7001
 ```
+
+## Combined script
+
+```sh
+docker rm -f pg-forward 2>/dev/null || true
+docker ps --filter name=floci-rds-db --format "{{.Names}}" \
+	| xargs -r -I {} sh -c 'docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" "$1"' _ {} \
+	| xargs -r -I {} docker run -d --name pg-forward -p 7001:5432 alpine/socat tcp-listen:5432,fork,reuseaddr tcp:{}:5432
+
+docker run --rm -it postgres:18.6-alpine \
+	psql "postgresql://root:${RDS_PASSWORD}@host.docker.internal:7001/postgres?sslmode=disable" -c "\\l"
+```

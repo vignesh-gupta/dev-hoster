@@ -1,3 +1,5 @@
+eval $(floci env)
+
 aws ecs register-task-definition \
   --endpoint-url http://localhost:4566 \
   --family builder-server-task \

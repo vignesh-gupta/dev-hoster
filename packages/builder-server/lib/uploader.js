@@ -6,25 +6,35 @@ const { publishLog, sendS3Command } = require("./config")
 
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME || "simple-vercel-output"
 
-async function uploadDist(distFolderPath, projectId, bucket = BUCKET_NAME) {
+async function uploadDist(
+  distFolderPath,
+  projectId,
+  deploymentId,
+  bucket = BUCKET_NAME
+) {
   const distFolderContents = fs.readdirSync(distFolderPath, { recursive: true })
 
-  publishLog("Starting Upload")
+  const s3Key = `__outputs/${projectId}/${deploymentId}`
 
-  for (const file of distFolderContents) {
+  publishLog("Starting Upload to" + ` s3://${bucket}/${s3Key}...`)
+
+  const uploadPromises = distFolderContents.map(async (file) => {
     const filePath = path.join(distFolderPath, file)
-    if (fs.lstatSync(filePath).isDirectory()) continue
+    if (fs.lstatSync(filePath).isDirectory()) return
 
     publishLog(`Uploading ${filePath}...`)
+
     const command = new PutObjectCommand({
       Bucket: bucket,
-      Key: `__outputs/${projectId}/${file}`,
+      Key: `${s3Key}/${file}`,
       Body: fs.createReadStream(filePath),
       ContentType: mime.lookup(filePath),
     })
     await sendS3Command(command)
     publishLog(`Uploaded ${filePath}`)
-  }
+  })
+
+  await Promise.all(uploadPromises)
 
   publishLog("Done...")
   return `s3://${bucket}/__outputs/${projectId}`

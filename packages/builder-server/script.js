@@ -53,7 +53,7 @@ async function init() {
     throw new Error(`Output directory "${OUTPUT_DIR}" not found`)
   }
 
-  const s3Path = await uploadDist(distFolderPath, PROJECT_ID)
+  const s3Path = await uploadDist(distFolderPath, PROJECT_ID, DEPLOYMENT_ID)
   await updateDeploymentStatus("READY", { s3Path })
 }
 

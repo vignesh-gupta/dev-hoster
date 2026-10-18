@@ -17,6 +17,46 @@ const time = (iso: string) =>
     second: "2-digit",
   })
 
+const ansiColors: Record<number, string> = {
+  30: "text-black",
+  31: "text-red-400",
+  32: "text-green-400",
+  33: "text-yellow-300",
+  34: "text-blue-400",
+  35: "text-fuchsia-400",
+  36: "text-cyan-300",
+  37: "text-white",
+  90: "text-gray-400",
+  91: "text-red-300",
+  92: "text-green-300",
+  93: "text-yellow-200",
+  94: "text-blue-300",
+  95: "text-fuchsia-300",
+  96: "text-cyan-200",
+  97: "text-white",
+}
+
+function renderAnsi(message: string) {
+  const parts: Array<{ text: string; className?: string }> = []
+  const pattern = new RegExp(`${String.fromCharCode(27)}\\[([0-9;]*)m`, "g")
+  let color: string | undefined
+  let start = 0
+  let match: RegExpExecArray | null
+
+  while ((match = pattern.exec(message))) {
+    if (match.index > start) parts.push({ text: message.slice(start, match.index), className: color })
+
+    for (const code of (match[1] || "0").split(";").map(Number)) {
+      if (code === 0 || code === 39) color = undefined
+      else if (ansiColors[code]) color = ansiColors[code]
+    }
+    start = pattern.lastIndex
+  }
+
+  if (start < message.length) parts.push({ text: message.slice(start), className: color })
+  return parts.length ? parts : [{ text: message }]
+}
+
 /**
  * Terminal-style build log. Connects to the SSE route, which replays stored lines
  * and then streams live ones until the deployment is READY or FAILED.
@@ -147,7 +187,7 @@ export function BuildLogViewer({
           const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 32
           if (!atBottom && logFollow) setLogPref("logFollow", false)
         }}
-        className="max-h-[28rem] min-h-44 overflow-auto py-2 font-mono text-xs leading-5 outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="max-h-112 min-h-44 overflow-auto py-2 font-mono text-xs leading-5 outline-none focus-visible:ring-1 focus-visible:ring-ring"
       >
         {lines.length === 0 ? (
           <p className="px-3 py-1 text-white/60">
@@ -176,10 +216,14 @@ export function BuildLogViewer({
               <span
                 className={cn(
                   "min-w-0 flex-1",
-                  logWrap ? "break-words whitespace-pre-wrap" : "whitespace-pre"
+                  logWrap ? "wrap-break-word whitespace-pre-wrap" : "whitespace-pre"
                 )}
               >
-                {l.message}
+                {renderAnsi(l.message).map((part, index) => (
+                  <span key={index} className={part.className}>
+                    {part.text}
+                  </span>
+                ))}
               </span>
             </div>
           ))

@@ -25,12 +25,12 @@
 
       const project = await response.json()
 
-      const {id: projectId} = project;
+      const {id: projectId, activeDeploymentId} = project;
 
       if (!projectId) {
         throw new Error("The /rs/get-live response must contain a projectId field");
       }
-      const target = `${s3BaseUrl}${projectId}`;
+      const target = `${s3BaseUrl}${projectId}/${activeDeploymentId}/`;
       return proxy.web(req, res, { target, changeOrigin: true });
     } catch (error) {
       console.error("Failed to resolve base URL:", error);

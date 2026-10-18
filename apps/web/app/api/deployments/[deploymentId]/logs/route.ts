@@ -43,7 +43,9 @@ export async function GET(
           subscriber.quit().catch(() => subscriber.disconnect())
           try {
             controller.close()
-          } catch {}
+          } catch {
+            console.warn("[logs] stream already closed")
+          }
         }
         const emit = (event: LogEvent) => {
           if (closed) return
