@@ -25,21 +25,27 @@
 
       const project = await response.json()
 
-      const {id: projectId, activeDeploymentId} = project;
+      const {id: projectId, activeDeploymentId, deploymentType, lambdaUrl} = project;
 
       if (!projectId) {
         throw new Error("The /rs/get-live response must contain a projectId field");
       }
-      const target = `${s3BaseUrl}${projectId}/${activeDeploymentId}/`;
+      if (deploymentType === "SSR") {
+        if (!lambdaUrl) {
+          throw new Error("SSR project is missing its Lambda Function URL");
+        }
+        return proxy.web(req, res, { target: lambdaUrl, changeOrigin: true });
+      }
+
+      if (!activeDeploymentId) {
+        throw new Error("Static project is missing an active deployment");
+      }
+      const target = `${s3BaseUrl}${projectId}/${activeDeploymentId}/${req.url === "/" ? "index.html" : ""}`;
       return proxy.web(req, res, { target, changeOrigin: true });
     } catch (error) {
       console.error("Failed to resolve base URL:", error);
       return res.status(502).send("Unable to resolve the base URL");
     }
-  });
-
-  proxy.on("proxyReq", (proxyReq, req) => {
-    if (req.url === "/") proxyReq.path += "index.html";
   });
 
   app.listen(PORT, () => console.log(`Reverse Proxy Server is running on port ${PORT}`));

@@ -397,7 +397,7 @@ LAMBDA_EXECUTION_ROLE_ARN=arn:aws:iam::123456789:role/dev-hoster-deployed-lambda
 
 ---
 
-## Phase 5 — Preview Server: Route SSR vs Static
+## [DONE] Phase 5 — Preview Server: Route SSR vs Static
 
 ### Task 5.1 — Extend the `/api/rs/get-live` endpoint
 
