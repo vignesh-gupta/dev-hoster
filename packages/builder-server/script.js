@@ -6,6 +6,7 @@ const { cloneRepo } = require("./lib/git")
 const { runBuild } = require("./lib/buildRunner")
 const { uploadDist } = require("./lib/uploader")
 const { updateDeploymentStatus } = require("./lib/deploymentStatus")
+const { detectDeploymentType } = require("./lib/frameworkDetector")
 
 const PROJECT_ID = process.env.PROJECT_ID
 const DEPLOYMENT_ID = process.env.DEPLOYMENT_ID
@@ -33,6 +34,15 @@ async function init() {
     commitMessage: commit.message,
   })
 
+  const detection = detectDeploymentType(outDirPath, {
+    framework: process.env.FRAMEWORK,
+    configuredOutputDir: OUTPUT_DIR,
+  })
+  publishLog(`Deployment type: ${detection.deploymentType}`)
+  if (detection.deploymentType === "SSR") {
+    publishLog("Next.js SSR detected — Lambda packaging will run after the build")
+  }
+
   await runBuild(outDirPath, {
     installCommand: process.env.INSTALL_COMMAND,
     buildCommand: process.env.BUILD_COMMAND,
@@ -41,20 +51,25 @@ async function init() {
 
   publishLog("Build completed")
 
-  const distFolderPath = path.resolve(outDirPath, OUTPUT_DIR)
+  const distFolderPath = path.resolve(outDirPath, detection.outputDir)
   if (!distFolderPath.startsWith(outDirPath + path.sep)) {
-    throw new Error(`Output directory "${OUTPUT_DIR}" must be inside the repository`)
+    throw new Error(
+      `Output directory "${detection.outputDir}" must be inside the repository`
+    )
   }
 
   if (!fs.existsSync(distFolderPath)) {
-    publishLog(`Error: output directory "${OUTPUT_DIR}" not found`)
+    publishLog(`Error: output directory "${detection.outputDir}" not found`)
     const contents = fs.readdirSync(outDirPath)
     publishLog(`Repository root contains: ${contents.join(", ")}`)
-    throw new Error(`Output directory "${OUTPUT_DIR}" not found`)
+    throw new Error(`Output directory "${detection.outputDir}" not found`)
   }
 
   const s3Path = await uploadDist(distFolderPath, PROJECT_ID, DEPLOYMENT_ID)
-  await updateDeploymentStatus("READY", { s3Path })
+  await updateDeploymentStatus("READY", {
+    s3Path,
+    deploymentType: detection.deploymentType,
+  })
 }
 
 init()

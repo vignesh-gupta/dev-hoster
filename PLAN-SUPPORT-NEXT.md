@@ -73,7 +73,7 @@ Run `pnpm db:update` to apply the new columns. For existing deployments, the `@d
 
 ---
 
-## Phase 1 — Builder: Detect Framework & Build Mode
+## [DONE] Phase 1 — Builder: Detect Framework & Build Mode
 
 The builder needs to know whether a project produces static output or needs SSR. Two signals are available:
 
