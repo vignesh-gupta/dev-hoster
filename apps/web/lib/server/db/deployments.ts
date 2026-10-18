@@ -94,6 +94,7 @@ export async function createDeployment(
     ProjectRow,
     | "id"
     | "slug"
+    | "framework"
     | "repoUrl"
     | "branch"
     | "installCommand"
@@ -118,6 +119,7 @@ export async function createDeployment(
     const taskArn = await queueBuild({
       projectId: project.id,
       projectSlug: project.slug,
+      framework: project.framework,
       deploymentId: row.id,
       repoUrl: project.repoUrl,
       branch: row.branch ?? project.branch,
@@ -150,7 +152,14 @@ export async function createDeployment(
 export async function updateDeploymentStatus(
   id: string,
   status: DeploymentStatus,
-  extra: { s3Path?: string; commitSha?: string; commitMessage?: string } = {}
+  extra: {
+    s3Path?: string
+    commitSha?: string
+    commitMessage?: string
+    deploymentType?: "STATIC" | "SSR"
+    lambdaUrl?: string
+    lambdaArn?: string
+  } = {}
 ): Promise<Deployment | null> {
   const existing = await db.orm.public.Deployment.where({ id }).first()
   if (!existing) return null
@@ -165,6 +174,15 @@ export async function updateDeploymentStatus(
     ...(status === "BUILDING" && !existing.startedAt ? { startedAt: now } : {}),
     ...(isTerminalStatus(status) ? { finishedAt: now } : {}),
     ...(status === "READY" && extra.s3Path ? { s3Path: extra.s3Path } : {}),
+    ...(status === "READY" && extra.deploymentType
+      ? { deploymentType: extra.deploymentType }
+      : {}),
+    ...(status === "READY" && extra.lambdaUrl
+      ? { lambdaUrl: extra.lambdaUrl }
+      : {}),
+    ...(status === "READY" && extra.lambdaArn
+      ? { lambdaArn: extra.lambdaArn }
+      : {}),
     ...(extra.commitSha ? { commitSha: extra.commitSha } : {}),
     ...(extra.commitMessage ? { commitMessage: extra.commitMessage } : {}),
   }
