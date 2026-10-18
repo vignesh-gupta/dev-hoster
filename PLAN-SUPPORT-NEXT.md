@@ -115,6 +115,7 @@ This module reads the cloned repo and determines the deployment type:
 
 **Parsing strategy for `next.config`:**  
 Don't try to `require()` or `import()` it (it may have TypeScript, dependencies, etc.). Instead:
+
 - Use a simple regex / AST-lite approach to find `output:` in the file.
 - Look for the string `"export"` or `'export'` near `output`.
 - If found → STATIC. Otherwise → SSR.
@@ -247,9 +248,15 @@ A new module that creates/updates/deletes Lambda functions. This can live inside
 **File (new):** `packages/builder-server/lib/lambdaDeployer.js`
 
 ```js
-const { LambdaClient, CreateFunctionCommand, UpdateFunctionCodeCommand,
-        GetFunctionCommand, DeleteFunctionCommand, CreateFunctionUrlConfigCommand,
-        waitUntilFunctionActiveV2 } = require("@aws-sdk/client-lambda")
+const {
+  LambdaClient,
+  CreateFunctionCommand,
+  UpdateFunctionCodeCommand,
+  GetFunctionCommand,
+  DeleteFunctionCommand,
+  CreateFunctionUrlConfigCommand,
+  waitUntilFunctionActiveV2,
+} = require("@aws-sdk/client-lambda")
 
 /**
  * deployLambda({ projectId, deploymentId, s3Bucket, s3Key, role, region })
@@ -350,6 +357,7 @@ resource "aws_iam_role_policy" "deployed_lambda_s3" {
 **File:** `infra/iam.tf`
 
 The builder's ECS task role needs permissions to:
+
 - `lambda:CreateFunction`
 - `lambda:UpdateFunctionCode`
 - `lambda:CreateFunctionUrlConfig`
@@ -391,6 +399,7 @@ Add `LAMBDA_EXECUTION_ROLE_ARN` to `globalEnv`.
 **File:** `.env.example`
 
 Add:
+
 ```
 LAMBDA_EXECUTION_ROLE_ARN=arn:aws:iam::123456789:role/dev-hoster-deployed-lambda
 ```
@@ -404,6 +413,7 @@ LAMBDA_EXECUTION_ROLE_ARN=arn:aws:iam::123456789:role/dev-hoster-deployed-lambda
 **File:** The API route that the preview server calls (`apps/web/app/api/rs/get-live/route.ts` or similar).
 
 Currently returns `{ id, activeDeploymentId }`. Extend to also return:
+
 - `deploymentType: "STATIC" | "SSR"`
 - `lambdaUrl: string | null`
 
@@ -448,13 +458,14 @@ if (deploymentType === "SSR") {
 
 ---
 
-## Phase 6 — Web App: API & UI Updates
+## [DONE] Phase 6 — Web App: API & UI Updates
 
 ### Task 6.1 — Framework-aware defaults in project creation
 
 **File:** `apps/web/lib/schemas.ts` and the project creation API route.
 
 When a user selects `framework: "NEXT"`, auto-set sensible defaults:
+
 - `buildCommand` → `"npm run build"` (same)
 - `outputDir` → `"out"` if they want static export, or leave it unused for SSR (the builder detects automatically)
 
@@ -472,6 +483,7 @@ No breaking changes here — the existing defaults work. The builder handles the
 **File:** `apps/web/lib/server/db/deployments.ts` or a new cleanup module.
 
 When a deployment is deleted (if you have that feature, or on project delete cascade):
+
 1. Read `lambdaArn` from the deployment row.
 2. If present, call Lambda `DeleteFunction` to clean up.
 3. Then delete the DB row.
@@ -501,6 +513,7 @@ The PATCH handler receives the builder's callback. It already calls `updateDeplo
 For local development with floci (LocalStack), Lambda and Lambda Function URLs are supported. The builder's `lambdaDeployer.js` already uses `AWS_ENDPOINT_URL` for the Lambda client, so it should work against LocalStack the same way S3 and ECS do.
 
 Verify:
+
 - `AWS_ENDPOINT_URL=http://localhost:4566` is passed to the Lambda client.
 - LocalStack Community edition supports `lambda:CreateFunction`, `lambda:CreateFunctionUrlConfig`.
 
@@ -575,16 +588,16 @@ Phase 7 (Local Dev)  ←── depends on everything
 
 ## Implementation Order (Recommended)
 
-| Order | Tasks | Why |
-|-------|-------|-----|
-| 1 | Phase 0 (all) | Foundation — everything depends on the schema |
-| 2 | Phase 1 (all) + Phase 4 (in parallel) | Detection is cheap; infra is independent |
-| 3 | Phase 2 (all) | OpenNext build integration |
-| 4 | Phase 3 (all) | Lambda deployment — this is the critical new capability |
-| 5 | Phase 5.1 + 5.2 | Preview server routing — makes it work end-to-end |
-| 6 | Phase 6.5 → 6.1 → 6.2 | API callback first, then UI polish |
-| 7 | Phase 6.3 + 6.4 | Cleanup lifecycle |
-| 8 | Phase 5.3 + Phase 7 | Optimization + local dev polish |
+| Order | Tasks                                 | Why                                                     |
+| ----- | ------------------------------------- | ------------------------------------------------------- |
+| 1     | Phase 0 (all)                         | Foundation — everything depends on the schema           |
+| 2     | Phase 1 (all) + Phase 4 (in parallel) | Detection is cheap; infra is independent                |
+| 3     | Phase 2 (all)                         | OpenNext build integration                              |
+| 4     | Phase 3 (all)                         | Lambda deployment — this is the critical new capability |
+| 5     | Phase 5.1 + 5.2                       | Preview server routing — makes it work end-to-end       |
+| 6     | Phase 6.5 → 6.1 → 6.2                 | API callback first, then UI polish                      |
+| 7     | Phase 6.3 + 6.4                       | Cleanup lifecycle                                       |
+| 8     | Phase 5.3 + Phase 7                   | Optimization + local dev polish                         |
 
 **First working demo:** After completing through step 5, you can deploy a Next.js SSR app and visit it via `<slug>.host`.
 
@@ -602,11 +615,11 @@ Phase 7 (Local Dev)  ←── depends on everything
 
 ## Risks & Mitigations
 
-| Risk | Mitigation |
-|------|------------|
-| OpenNext version lags behind Next.js 16 | Pin OpenNext version; test with a reference Next.js app in CI |
-| Lambda cold starts (200–800ms) | Acceptable for MVP. Add provisioned concurrency config later |
-| Lambda zip exceeds 250MB unzipped limit | OpenNext prunes aggressively; monitor size. Fallback: container image Lambda (10GB limit) |
-| `next.config` parsing heuristic is wrong | Log the detected type; let user override `deploymentType` in project settings (future) |
+| Risk                                                 | Mitigation                                                                                            |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| OpenNext version lags behind Next.js 16              | Pin OpenNext version; test with a reference Next.js app in CI                                         |
+| Lambda cold starts (200–800ms)                       | Acceptable for MVP. Add provisioned concurrency config later                                          |
+| Lambda zip exceeds 250MB unzipped limit              | OpenNext prunes aggressively; monitor size. Fallback: container image Lambda (10GB limit)             |
+| `next.config` parsing heuristic is wrong             | Log the detected type; let user override `deploymentType` in project settings (future)                |
 | LocalStack Lambda Function URLs not fully compatible | Test early in Phase 7. Fallback: invoke Lambda directly via SDK instead of Function URL for local dev |
-| Lambda function leak (orphaned functions) | Phase 6.3/6.4 cleanup + periodic reconciliation job (future) |
+| Lambda function leak (orphaned functions)            | Phase 6.3/6.4 cleanup + periodic reconciliation job (future)                                          |
