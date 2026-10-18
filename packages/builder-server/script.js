@@ -4,9 +4,12 @@ const { publishLog } = require("./lib/config")
 const { closePublisher } = require("./lib/config")
 const { cloneRepo } = require("./lib/git")
 const { runBuild } = require("./lib/buildRunner")
-const { uploadDist } = require("./lib/uploader")
+const { uploadDist, uploadLambdaZip } = require("./lib/uploader")
 const { updateDeploymentStatus } = require("./lib/deploymentStatus")
 const { detectDeploymentType } = require("./lib/frameworkDetector")
+const { buildWithOpenNext } = require("./lib/openNextBuilder")
+const { packageLambda } = require("./lib/lambdaPackager")
+const { deployLambda } = require("./lib/lambdaDeployer")
 
 const PROJECT_ID = process.env.PROJECT_ID
 const DEPLOYMENT_ID = process.env.DEPLOYMENT_ID
@@ -65,11 +68,30 @@ async function init() {
     throw new Error(`Output directory "${detection.outputDir}" not found`)
   }
 
-  const s3Path = await uploadDist(distFolderPath, PROJECT_ID, DEPLOYMENT_ID)
-  await updateDeploymentStatus("READY", {
-    s3Path,
-    deploymentType: detection.deploymentType,
-  })
+  if (detection.deploymentType === "STATIC") {
+    const s3Path = await uploadDist(distFolderPath, PROJECT_ID, DEPLOYMENT_ID)
+    await updateDeploymentStatus("READY", {
+      s3Path,
+      deploymentType: "STATIC",
+    })
+  } else {
+    const openNext = await buildWithOpenNext(outDirPath)
+    const s3Path = await uploadDist(openNext.assetsDir, PROJECT_ID, DEPLOYMENT_ID)
+    const zipPath = await packageLambda(openNext.serverDir, DEPLOYMENT_ID)
+    const lambdaKey = await uploadLambdaZip(zipPath, PROJECT_ID, DEPLOYMENT_ID)
+    const lambda = await deployLambda({
+      projectId: PROJECT_ID,
+      deploymentId: DEPLOYMENT_ID,
+      s3Bucket: process.env.LAMBDA_S3_BUCKET || process.env.AWS_BUCKET_NAME,
+      s3Key: lambdaKey,
+    })
+    await updateDeploymentStatus("READY", {
+      s3Path,
+      deploymentType: "SSR",
+      lambdaUrl: lambda.functionUrl,
+      lambdaArn: lambda.functionArn,
+    })
+  }
 }
 
 init()

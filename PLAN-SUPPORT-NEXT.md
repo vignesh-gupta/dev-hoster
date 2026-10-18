@@ -238,7 +238,7 @@ The updated flow for the main `init()` function:
 
 ---
 
-## Phase 3 — Lambda Deployer
+## [DONE] Phase 3 — Lambda Deployer
 
 A new module that creates/updates/deletes Lambda functions. This can live inside the builder (simplest) or as a separate package (cleaner separation). Start inside the builder.
 
