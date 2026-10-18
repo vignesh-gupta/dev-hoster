@@ -40,4 +40,24 @@ async function uploadDist(
   return `s3://${bucket}/__outputs/${projectId}`
 }
 
-module.exports = { uploadDist }
+async function uploadLambdaZip(
+  zipFilePath,
+  projectId,
+  deploymentId,
+  bucket = BUCKET_NAME
+) {
+  const s3Key = `__lambdas/${projectId}/${deploymentId}/lambda.zip`
+  publishLog(`Uploading Lambda package to s3://${bucket}/${s3Key}...`)
+  await sendS3Command(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: s3Key,
+      Body: fs.createReadStream(zipFilePath),
+      ContentType: "application/zip",
+    })
+  )
+  publishLog("Lambda package uploaded")
+  return s3Key
+}
+
+module.exports = { uploadDist, uploadLambdaZip }

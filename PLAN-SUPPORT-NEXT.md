@@ -145,7 +145,7 @@ The detected `deploymentType` and potentially overridden `outputDir` are used in
 
 ---
 
-## Phase 2 — Builder: OpenNext Build & Lambda Packaging
+## [DONE] Phase 2 — Builder: OpenNext Build & Lambda Packaging
 
 When `deploymentType === "SSR"`, the builder runs an additional post-build step to package the output for Lambda.
 
