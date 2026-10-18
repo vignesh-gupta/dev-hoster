@@ -17,6 +17,7 @@ aws ecs register-task-definition \
       {"name": "AWS_BUCKET_NAME", "value": "'"${AWS_BUCKET_NAME:-simple-vercel-output}"'"},
       {"name": "LAMBDA_EXECUTION_ROLE_ARN", "value": "'"${LAMBDA_EXECUTION_ROLE_ARN:-arn:aws:iam::000000000000:role/local-lambda-role}"'"},
       {"name": "LAMBDA_S3_BUCKET", "value": "'"${AWS_BUCKET_NAME:-simple-vercel-output}"'"},
+      {"name": "AWS_ACCOUNT_ID", "value": "'"${AWS_ACCOUNT_ID:-000000000000}"'"},
       {"name": "GIT_PAT_TOKEN", "value": "'"$GIT_PAT_TOKEN"'"},
       {"name": "REDIS_URL", "value": "'"$REDIS_URL"'"},
       {"name": "WEB_BASE_URL", "value": "'"${WEB_BASE_URL:-http://host.docker.internal:3000}"'"},

@@ -442,6 +442,8 @@ return proxy.web(req, res, { target, changeOrigin: true })
 
 ### Task 5.3 — (Optional, post-MVP) Static asset optimization
 
+Status: not implemented; SSR requests currently all proxy through Lambda.
+
 For better performance, serve `/_next/static/*` requests directly from S3 (they're fingerprinted and immutable). Only SSR/dynamic routes go to Lambda.
 
 ```ts

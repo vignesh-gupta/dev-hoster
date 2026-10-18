@@ -54,21 +54,21 @@ async function init() {
 
   publishLog("Build completed")
 
-  const distFolderPath = path.resolve(outDirPath, detection.outputDir)
-  if (!distFolderPath.startsWith(outDirPath + path.sep)) {
-    throw new Error(
-      `Output directory "${detection.outputDir}" must be inside the repository`
-    )
-  }
-
-  if (!fs.existsSync(distFolderPath)) {
-    publishLog(`Error: output directory "${detection.outputDir}" not found`)
-    const contents = fs.readdirSync(outDirPath)
-    publishLog(`Repository root contains: ${contents.join(", ")}`)
-    throw new Error(`Output directory "${detection.outputDir}" not found`)
-  }
-
   if (detection.deploymentType === "STATIC") {
+    const distFolderPath = path.resolve(outDirPath, detection.outputDir)
+    if (!distFolderPath.startsWith(outDirPath + path.sep)) {
+      throw new Error(
+        `Output directory "${detection.outputDir}" must be inside the repository`
+      )
+    }
+
+    if (!fs.existsSync(distFolderPath)) {
+      publishLog(`Error: output directory "${detection.outputDir}" not found`)
+      const contents = fs.readdirSync(outDirPath)
+      publishLog(`Repository root contains: ${contents.join(", ")}`)
+      throw new Error(`Output directory "${detection.outputDir}" not found`)
+    }
+
     const s3Path = await uploadDist(distFolderPath, PROJECT_ID, DEPLOYMENT_ID)
     await updateDeploymentStatus("READY", {
       s3Path,

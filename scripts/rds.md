@@ -63,3 +63,15 @@ preview server then routes that project's requests to the Function URL.
 
 Static projects and Next.js projects using `output: "export"` continue to use
 the S3 output path.
+
+For a local task registration, export the required values before running
+`scripts/register-task.sh`:
+
+```sh
+export LAMBDA_EXECUTION_ROLE_ARN=arn:aws:iam::000000000000:role/local-lambda-role
+export AWS_ACCOUNT_ID=000000000000
+export AWS_BUCKET_NAME=simple-vercel-output
+```
+
+The builder uses `AWS_ENDPOINT_URL` for both S3 and Lambda. Confirm the Lambda
+function and Function URL with floci's AWS-compatible CLI after a deployment.
