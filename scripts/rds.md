@@ -51,3 +51,15 @@ docker ps --filter name=floci-rds-db --format "{{.Names}}" \
 docker run --rm -it postgres:18.6-alpine \
 	psql "postgresql://root:${RDS_PASSWORD}@host.docker.internal:7001/postgres?sslmode=disable" -c "\\l"
 ```
+
+## Testing SSR deployments with floci
+
+Start floci and register the builder task with
+`LAMBDA_EXECUTION_ROLE_ARN=arn:aws:iam::000000000000:role/local-lambda-role`.
+Deploy a Next.js project whose `next.config.*` uses `output: "standalone"`.
+The builder packages the OpenNext server output, creates a Lambda function and
+Function URL at the floci endpoint, and reports the URL to the web app. The
+preview server then routes that project's requests to the Function URL.
+
+Static projects and Next.js projects using `output: "export"` continue to use
+the S3 output path.

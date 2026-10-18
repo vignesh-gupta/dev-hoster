@@ -506,7 +506,7 @@ The PATCH handler receives the builder's callback. It already calls `updateDeplo
 
 ---
 
-## Phase 7 — Local Development (floci)
+## [DONE] Phase 7 — Local Development (floci)
 
 ### Task 7.1 — Local Lambda emulation
 
