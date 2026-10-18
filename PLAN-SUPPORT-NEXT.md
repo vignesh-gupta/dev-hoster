@@ -304,7 +304,7 @@ These tell the builder where to deploy Lambdas and what IAM role to attach.
 
 ---
 
-## Phase 4 — Infrastructure (Terraform)
+## [DONE] Phase 4 — Infrastructure (Terraform)
 
 ### Task 4.1 — Lambda execution role for user deployments
 
