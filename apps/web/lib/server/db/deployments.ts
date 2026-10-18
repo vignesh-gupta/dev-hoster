@@ -16,6 +16,7 @@ import {
   type ProjectRow,
 } from "@/lib/server/db/mappers"
 import { publishEvent } from "@/lib/server/logs"
+import { refreshProjectCacheById } from "@/lib/cache"
 import { queueBuild, stopBuild } from "@/lib/server/queue-build"
 
 export async function getDeploymentById(
@@ -71,7 +72,9 @@ export async function listDeployments(
 
 async function freeDeploymentSlug(projectId: string, sha: string) {
   const taken = new Set(
-    (await db.orm.public.Deployment.where({ projectId }).all()).map((d) => d.slug)
+    (await db.orm.public.Deployment.where({ projectId }).all()).map(
+      (d) => d.slug
+    )
   )
   return deploymentSlug(sha, (s) => taken.has(s))
 }
@@ -174,6 +177,9 @@ export async function updateDeploymentStatus(
       })
     }
   })
+  if (status === "READY") {
+    await refreshProjectCacheById(existing.projectId)
+  }
   return getDeploymentById(id)
 }
 
@@ -185,6 +191,7 @@ export async function promoteDeployment(
   await db.orm.public.Project.where({ id: deployment.projectId }).update({
     activeDeploymentId: deployment.id,
   })
+  await refreshProjectCacheById(deployment.projectId)
   return true
 }
 
@@ -194,7 +201,9 @@ export async function cancelDeployment(
 ): Promise<Deployment | null> {
   if (isTerminalStatus(deployment.status)) return deployment
 
-  const row = await db.orm.public.Deployment.where({ id: deployment.id }).first()
+  const row = await db.orm.public.Deployment.where({
+    id: deployment.id,
+  }).first()
   if (row?.taskArn) {
     try {
       await stopBuild(row.taskArn)

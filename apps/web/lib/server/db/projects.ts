@@ -6,7 +6,11 @@ import {
   type UpdateProjectInput,
 } from "@/lib/schemas"
 import { projectNameFromRepoUrl, slugifyProjectName } from "@/lib/slug"
-import { isTerminalStatus, type Deployment, type ProjectWithActive } from "@/lib/types"
+import {
+  isTerminalStatus,
+  type Deployment,
+  type ProjectWithActive,
+} from "@/lib/types"
 import { createDeployment } from "@/lib/server/db/deployments"
 import {
   toDeployment,
@@ -16,6 +20,11 @@ import {
 } from "@/lib/server/db/mappers"
 import { conflict } from "@/lib/server/http"
 import { stopBuild } from "@/lib/server/queue-build"
+import {
+  cacheProject,
+  getCachedProject,
+  invalidateProjectCache,
+} from "@/lib/cache"
 
 export async function deploymentRowsFor(
   projectIds: string[]
@@ -41,9 +50,17 @@ export async function listProjects(): Promise<ProjectWithActive[]> {
 export async function getProjectBySlug(
   slug: string
 ): Promise<ProjectWithActive | null> {
+  const cached = await getCachedProject(slug)
+  if (cached) return cached
+
   const project = await getProjectRow(slug)
   if (!project) return null
-  return toProjectWithActive(project, await deploymentRowsFor([project.id]))
+  const decorated = toProjectWithActive(
+    project,
+    await deploymentRowsFor([project.id])
+  )
+  await cacheProject(slug, decorated)
+  return decorated
 }
 
 async function freeProjectSlug(base: string): Promise<string> {
@@ -103,6 +120,7 @@ export async function updateProject(
   const row = await getProjectRow(slug)
   if (!row) return null
   if (Object.keys(patch).length > 0) {
+    await invalidateProjectCache(slug)
     await db.orm.public.Project.where({ id: row.id }).update(patch)
   }
   return getProjectBySlug(slug)
@@ -131,5 +149,6 @@ export async function deleteProject(slug: string): Promise<boolean> {
     })
     await tx.orm.public.Project.where({ id: row.id }).delete()
   })
+  await invalidateProjectCache(slug)
   return true
 }
